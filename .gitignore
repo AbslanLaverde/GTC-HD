@@ -1,2 +1,5 @@
 # External repositories used as research targets
 upstream/
+
+# Writable experimental upstream worktrees
+experiments/
