@@ -30,7 +30,7 @@ The project is currently in:
 
 
 
-Read `project/GTC-HD\_PROJECT\_STATE.md` before performing substantive GTC-HD research.
+Read `docs/PROJECT_STATE.md` before performing substantive GTC-HD research.
 
 
 
@@ -46,7 +46,7 @@ Do not confuse upstream emulator repositories with GTC-HD project authority.
 
 
 
-Files under `project/` describe GTC-HD project state, research findings, and architectural decisions.
+Files under `docs/` describe GTC-HD project state, research findings, and architectural decisions.
 
 
 
@@ -150,7 +150,7 @@ Preferred location:
 
 
 
-`project/research/`
+`docs/research/`
 
 
 
@@ -226,7 +226,7 @@ The project is currently in:
 
 **Phase 0 — Discovery / Research / Architecture**
 
-Read `project/GTC-HD_PROJECT_STATE.md` before performing substantive GTC-HD research.
+Read `docs/PROJECT_STATE.md` before performing substantive GTC-HD research.
 
 ## Authority Model
 
@@ -234,7 +234,7 @@ Do not confuse upstream emulator repositories with GTC-HD project authority.
 
 ### GTC-HD project authority
 
-Files under `project/` describe GTC-HD project state, research findings, experiment definitions/results, and architectural decisions.
+Files under `docs/` describe GTC-HD project state, research findings, experiment definitions/results, and architectural decisions.
 
 Do not infer an accepted GTC-HD decision unless it is explicitly documented as accepted.
 
@@ -318,7 +318,7 @@ For EXP-001:
 
 Read the experiment specification before implementation:
 
-`project/experiments/EXP-001_PASSIVE_PPU_OBSERVATION.md`
+`docs/experiments/EXP-001/SPEC.md`
 
 ## Research and Experiment Outputs
 
@@ -326,9 +326,9 @@ Write durable GTC-HD research and experiment documentation outside upstream repo
 
 Preferred locations:
 
-`project/research/`
+`docs/research/`
 
-`project/experiments/`
+`docs/experiments/`
 
 Research and experiment reports should normally include:
 

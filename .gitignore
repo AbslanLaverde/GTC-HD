@@ -1,5 +1,8 @@
 # External repositories used as research targets
-upstream/
+/upstream/
 
 # Writable experimental upstream worktrees
-experiments/
+/experiments/
+
+# Local inputs, configuration, and generated outputs
+/local/

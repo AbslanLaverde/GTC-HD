@@ -718,7 +718,7 @@ After implementation/testing, create:
 
 
 
-`project/experiments/EXP-001\_RESULTS.md`
+`docs/experiments/EXP-001/RESULTS.md`
 
 
 
