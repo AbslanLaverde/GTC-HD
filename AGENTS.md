@@ -359,5 +359,38 @@ Do not recommend compromising SNES execution merely to simplify enhanced renderi
 
 Determine which SNES emulation architecture provides the strongest foundation for GTC-HD and where sufficiently rich PPU state can be intercepted to support a modern enhancement renderer without compromising accurate SNES execution.
 
+### EXP-002
+
+The worktree:
+
+`experiments/bsnes-exp-002/`
+
+is writable only for:
+
+**EXP-002 — OBJ / Sprite Provenance Preservation**
+
+Expected branch:
+
+`gtc-hd/exp-002-obj-provenance`
+
+Expected baseline:
+
+`906f74b6e`
+
+For EXP-002:
+
+* modifications may be made inside `experiments/bsnes-exp-002/`;
+* commits may be made only on its experiment branch when explicitly requested;
+* do not merge experimental changes into upstream `master`;
+* do not modify `upstream/bsnes/`;
+* do not modify the EXP-001 worktrees;
+* preserve normal bsnes cycle-PPU OBJ behavior;
+* preserve sprite limits, OAM behavior, overlap rules, priority, and execution-visible PPU side effects;
+* experimental provenance code is evidence-gathering code, not accepted GTC-HD architecture;
+* a successful experiment does not select bsnes as the GTC-HD foundation.
+
+Read the experiment specification before implementation:
+
+`docs/experiments/EXP-002/SPEC.md`
 
 
