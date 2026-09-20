@@ -1,5 +1,7 @@
 # EXP-001 — Passive PPU Observation: implementation results
 
+**Latest update — September 19, 2026:** Observer runtime callback-window controls are implemented and the supported UCRT64 build passed. B2/C ROM validation remains pending. See [section 12](#12-runtime-observer-window-controls--september-19-2026). Sections 1–11 below retain the historical September 18 implementation-pass results, including its then-current build blocker; they are not the current build status.
+
 **Date:** September 18, 2026  
 **Status:** IMPLEMENTED / RUNTIME VALIDATION PENDING  
 **Desktop build:** BLOCKED by the available toolchain  
@@ -288,3 +290,210 @@ Retrieve C's status/records between runs, export before clearing, and treat any 
 In supplementary repeatable runs, perform the synchronized-state checks described above, including A/A and B/B controls. Report a state-comparison limitation if trustworthy equality cannot be established. Stop and preserve evidence if native frames or relevant state diverge; do not change native semantics to force a pass.
 
 Only these runtime results can support the EXP-001 passivity hypothesis for the tested slice. They would still not select bsnes or accept a GTC-HD rendering architecture.
+
+## 12. Runtime observer window controls — September 19, 2026
+
+**Status: IMPLEMENTED / SUPPORTED BUILD PASSED / B2 AND C RUNTIME VALIDATION PENDING.** No ROM was loaded or executed during this implementation pass. EXP-001 is not marked verified, and no GTC-HD architecture decision has been made.
+
+### 12.1 Starting evidence, authority, and repository identity
+
+The user reports completed deterministic 600-callback Super Mario World title-sequence runs A1, A2, and B, with identical native-frame CSV files and common SHA-256:
+
+```text
+92B098CF30A4171F707185B2A32918B8F361EDF30AC8BA6AA3F1FEAD39BAE96F
+```
+
+This is user-provided prior runtime evidence. It was not independently rerun here and does not establish C equivalence. The earlier reports document their own historical implementation passes. Current project authority is under `docs/`; the former `project/` references above are historical.
+
+Read before this change: `AGENTS.md`, `docs/PROJECT_STATE.md`, `docs/experiments/EXP-001/SPEC.md`, this report, and `docs/experiments/EXP-001/RUNTIME_HARNESS_RESULTS.md`.
+
+| Worktree | Branch | HEAD at start and completion |
+| --- | --- | --- |
+| Writable: `experiments/bsnes-exp-001` | `gtc-hd/exp-001-passive-ppu-observation` | `2e0eeaa1580487f277e60f6ef55b9c74ca1026ae` |
+| Read-only harness baseline: `experiments/bsnes-exp-001-baseline` | `gtc-hd/exp-001-runtime-harness` | `906f74b6e5f4f2f4e62bb960d01aa68c9f55f919` |
+| Read-only audited source: `upstream/bsnes` | `master` | `7d5aa1e656b9171524d01b1b22917197d8121cb4` |
+
+All three worktrees and GTC-HD-Lab were clean at the beginning. The writable branch descends from the audited baseline. Only the observer worktree and this results document were changed. Both read-only worktrees remain clean; canonical project state, instructions, specification, and runtime-harness report remain unchanged. Nothing was committed or staged.
+
+Durable source changes, relative to `experiments/bsnes-exp-001`:
+
+| File | Change |
+| --- | --- |
+| `bsnes/target-bsnes/program/exp001-observer-window.hpp` | New experimental argument validation, callback-window lifecycle, checked export, and summary |
+| `bsnes/target-bsnes/bsnes.cpp` | Route observer options before the existing EXP-001 parser; validate/preflight both outputs before normal startup |
+| `bsnes/target-bsnes/program/program.hpp` | Own the frontend window controller |
+| `bsnes/target-bsnes/program/program.cpp` | Arm/disarm around ordinary core runs; reject ambiguous execution modes for C; finalize before unload/shutdown |
+| `tests/exp001-runtime/observer-window-test.cpp` | New synthetic host tests using the existing observer and frame hasher |
+| `tests/exp001-runtime/observer-window-cli-test.py` | New desktop parser/preflight rejection tests; no ROM content |
+
+Outside that worktree, only `docs/experiments/EXP-001/RESULTS.md` is modified. Generated binaries, logs, synthetic outputs, and the CLI test's hiro cache remain under already-ignored build/output locations.
+
+### 12.2 Options and validation
+
+All three options are required together:
+
+```text
+--exp001-observer-csv=<NEW_PROVENANCE_OUTPUT_PATH>
+--exp001-observer-start-callback=<N>
+--exp001-observer-callback-count=<M>
+```
+
+They are valid only with `--exp001-frame-hash=<NEW_HASH_OUTPUT_PATH>`. `N` is an unsigned decimal integer including zero; `M` is a positive unsigned decimal integer. Empty, signed, fractional, nondecimal, duplicate, and uint64-overflow values are rejected. The half-open range `[N, N+M)` must fit within the requested native callback count. Addition is checked before computing the exclusive end. A window starting at or beyond the run limit, or extending beyond it, is rejected before emulation rather than silently shortened. The existing hash count default remains 120 when its option is absent.
+
+No observer options means B2: the observer remains disabled by its existing initialization/power lifecycle; the new controller does no capture, export, summary creation, or configuration enforcement. The normal no-EXP-001 path also remains inert. The original frame hasher, its algorithm/schema, and the `Program::videoFrame()` hook are byte-for-byte unchanged from the starting HEAD.
+
+C requires ordinary cycle-PPU execution: automatic state loading is rejected, as are run-ahead, active rewind/history recording, and a fast-PPU configuration. These checks reject incompatible settings rather than changing them. Existing deterministic-run operator requirements still apply: fixed settings/input/persistent memory, no reset, manual save/load, reload, rewind, or other UI actions during the run. No additional guard is imposed on B2 or ordinary use.
+
+### 12.3 Callback semantics and off-by-one proof
+
+`Exp001FrameHash::actual` is the number of successfully hashed callbacks. Immediately before the next ordinary `emulator->run()`, it is therefore the zero-based index that the next callback will receive.
+
+`Program::main()` calls `Exp001ObserverWindow::beforeRun()` immediately before that ordinary run. When `actual == N`, it executes the required diagnostic sequence: disable, clear records/drop status, enable. No new observer activation takes place inside `Program::videoFrame()`.
+
+After `emulator->run()` returns normally to `Program::main()`, `afterRun()` checks that exactly one callback was successfully added. Unexpected callback counts, out-of-bracket callbacks detected at the next run, or an observer reset/disarm during an observed run cause failure. The controller tracks the expected next callback from zero; it never derives callback indices from the observer's native frame counter.
+
+When the returned count equals `N+M`, the callback just delivered was `N+M-1`. The controller disables the observer, copies its status, and exports before another emulation run can begin. This occurs even if the hash harness's stop flag was set by the final callback. Normal hash-limit shutdown is checked afterward.
+
+For N=500, M=1:
+
+| Frontend point | Hash `actual` | Observer action |
+| --- | --- | --- |
+| Before runs producing callbacks 0–499 | 0–499 | Remains disabled |
+| Before the run producing callback 500 | 500 | Disable, clear, enable |
+| Inside callback 500 | Becomes 501 after successful hashing | No observer control or export in callback |
+| After that run returns | 501 | Disable, preserve status, export |
+| Before runs producing callbacks 501–599 | 501–599 | Remains disabled |
+
+For N=0, arming occurs after game power and before the first run, so the first callback-producing interval is observed. For M>1, the observer stays enabled across exactly M such intervals, with one clear at the beginning and one export at the end. It is not cleared per callback. Buffer capacity remains 32,768, so a multi-callback window may overflow.
+
+**Native timing distinction:** `CPU::scanline()` in `bsnes/sfc/cpu/timing.cpp` synchronizes the PPU and leaves a frame event at `vcounter() == ppu.vdisp()`. Cycle `PPU::writeIO()` sets `vdisp` to 225 or 240 depending on overscan. The existing observer's `frame` instead counts V=0 boundaries, and native BG fetch scheduling continues through V=240. Therefore a callback-producing run interval can include offscreen fetches after the preceding callback, before V=0, as well as the selected frame's visible rendering. A one-callback CSV can legitimately contain more than one observer `frame` ID. The implemented window is exactly the requested **callback-producing run interval**, not a fabricated V=0-to-V=0 interval or a filter on record `frame`. No PPU scheduling or BG-selection change was made to hide this distinction.
+
+### 12.4 Export, overflow, summary, and termination
+
+The runtime reuses `SuperFamicom::Exp001::observer` and its existing `setEnabled`, `clear`, `status`, and `writeCsv` methods. Observer source, record schema, capacity, and BG hook are unchanged.
+
+The requested output must not exist. A new sidecar is reserved exclusively at `<PROVENANCE_OUTPUT_PATH>.summary.txt`. Direct path conflicts with the frame-hash output, including the generated summary/staging names, are rejected. Existing files/directories/symlinks at the provenance path and existing summary files are not overwritten.
+
+The legacy observer exporter itself opens files with replacement semantics. To reuse it safely, the frontend creates a private sibling directory `<PROVENANCE_OUTPUT_PATH>.exp001-tmp`, exports to its `capture.csv`, then publishes with `std::filesystem::copy_file(..., copy_options::none)`. Publication fails if another file has appeared at the requested path meanwhile. Export and publication results are checked separately; export failure or a late collision cannot be reported as success. Cleanup removes only the owned staging file/directory, never recursively. The output parent must already exist. Use ordinary ASCII paths for the initial validation commands because the unchanged observer exporter retains its narrow filename API; no broader filename-encoding guarantee was established here.
+
+All export and summary writes occur during frontend control, outside emulation execution. There is no new file I/O or threading in PPU work. The original provenance CSV schema is preserved.
+
+The summary starts with `# exp001_observer_window_version=1` and, on explicit finalization before shutdown, records:
+
+```text
+requested_start_callback
+requested_callback_count
+end_callback_exclusive
+window_started
+window_completed
+observed_callbacks
+actual_native_callbacks
+record_count
+capacity
+dropped_count
+overflow
+observer_frame
+observer_enabled
+export_attempted
+export_succeeded
+capture_complete
+reason
+```
+
+Status is frozen after disabling at export; later unobserved runs do not replace it. `window_completed=true` means the requested callback interval finished. `capture_complete=true` additionally requires successful export/publication, no controller error, and no overflow. These are intentionally separate: an overflowed window may complete and export its retained prefix, with explicit dropped count, but is never called a complete capture.
+
+Overflow does not shorten native hashing: subsequent callbacks continue through the requested hash count. The summary reports `reason=observer_overflow`, and the process exits nonzero because provenance is incomplete. This enables frame comparison even when buffer capacity proves insufficient. Capacity is not automatically enlarged.
+
+On normal early quit before N, no provenance CSV is created; the summary reports that the window never started, zero observed callbacks, and no export. Early quit during a window disables and exports the partial capture with `window_completed=false` and `capture_complete=false`. Export/preflight/callback errors also produce a nonzero exit; after a runtime export error the frontend stops rather than pretending capture succeeded. Finalization is idempotent and occurs before `unload()` and before the existing Windows `TerminateProcess` path.
+
+Check **both** the frame-hash footer/process exit and the complete observer summary. A crash, forced kill, summary write/close failure, or disk error can leave incomplete files. Successful provenance capture alone does not establish a completed 600-callback hash run. Invalid command-line requests may fail before a sidecar is created; their reason is written to stderr.
+
+### 12.5 Build and focused tests actually performed
+
+Supported environment: existing MSYS2 UCRT64 at `C:/msys64`; **g++ 16.2.0 (Rev3, Built by MSYS2 project)**. No toolchain or ROM was installed/downloaded.
+
+From the observer worktree in UCRT64:
+
+```sh
+export PATH=/ucrt64/bin:/usr/bin:$PATH
+make -j4 -C bsnes local=false
+```
+
+**Result: exit 0.** This was an incremental desktop rebuild of six affected frontend translation units and a successful relink, using existing core objects. Configuration remained the supported desktop performance build (`-O3`), GNU C++17, OpenMP enabled, `local=false`. It emitted **six pre-existing `-Wcast-user-defined` warnings at `nall/string/markup/bml.hpp:153`**, one through each affected frontend unit. No diagnostic points to the added runtime controller. This is not a claim that the entire upstream project is warning-free.
+
+The first sandbox shell attempt failed before compilation because the MSYS login setup/GCC temporary directory was outside writable locations. The successful build used a non-login MSYS bash and set `TMPDIR` to the ignored worktree test build directory. No global Git configuration or toolchain repair was needed.
+
+Built executable: `experiments/bsnes-exp-001/bsnes/out/bsnes.exe`
+
+Size: **9,729,667 bytes**
+
+SHA-256: `0DEB112ECC1DDD44667A4355C68D00C6F54B84FCE19B0367ABCB750D440BC9FA`
+
+Focused test commands, from the observer worktree in UCRT64 (create the ignored build directory and use fresh prefixes):
+
+```sh
+g++ -std=gnu++17 -O0 -g -Wall -Wextra -Werror -isystem . \
+  tests/exp001-runtime/observer-window-test.cpp bsnes/sfc/ppu/exp001-observer.cpp \
+  -o tests/exp001-runtime/build/observer-window-test.exe
+tests/exp001-runtime/build/observer-window-test.exe tests/exp001-runtime/build/window-run-1
+
+g++ -std=gnu++17 -O0 -g -Wall -Wextra -Werror -isystem . \
+  tests/exp001-runtime/frame-hash-test.cpp \
+  -o tests/exp001-runtime/build/frame-hash-regression.exe
+tests/exp001-runtime/build/frame-hash-regression.exe tests/exp001-runtime/build/window-hash-regression-1
+
+python tests/exp001-runtime/observer-window-cli-test.py \
+  bsnes/out/bsnes.exe tests/exp001-runtime/build/window-cli-1
+```
+
+Both C++ test builds passed with **no warnings**, assertions enabled. Both executables and the Python CLI test exited 0.
+
+| Test | Actual result |
+| --- | --- |
+| No observer options, inactive harness, B2 | Controller inert, observer disabled, no provenance/summary creation |
+| Synthetic B2/C 600-callback runs | Full native-hash-format CSV bytes identical; C captured only the synthetic work before callback 500, then disabled before 501 |
+| Boundary ranges | Passed start=0, one callback, multiple callbacks, last callback, and full-run windows; clear at start and export only after return |
+| Arithmetic/parser | Passed all six partial option combinations, no harness, duplicate/empty/malformed/signed values, zero count, uint64 overflow, outside-run ranges, and valid maximum exclusive-end arithmetic |
+| Early termination | Passed not-started/no-CSV and partially observed/exported-incomplete cases; finalization idempotent |
+| Overflow | Synthetic one-window 32,770 events retained 32,768 and dropped 2; exported prefix and explicit incomplete status; later hash callback still completed |
+| Output protection | Existing provenance, existing summary, direct hash-path alias, and a file appearing after preflight all rejected/preserved |
+| Export failure | A deliberately blocked staging file caused checked export failure, preserved count/status, and incomplete summary |
+| Callback discipline | Zero or multiple callbacks per simulated run and an out-of-bracket callback were rejected |
+| Existing hash regression suite | Known LE16 SHA-256 vector, row pitch/padding, count/metadata, disabled path, limits, errors, and exclusive output all passed unchanged |
+| Built desktop CLI | **26 rejection cases passed** before settings/frontend initialization, using a plain text argument-existence sentinel; no ROM loaded or generated |
+| Source protection | Hash implementation, callback hook, and all `bsnes/sfc/` source unchanged from starting HEAD; whitespace checks passed |
+
+The 600-callback tests above use small synthetic pixel arrays and synthetic observer events. They are **not** 600 emulated SNES frames, do not establish the native window's PPU provenance, and do not supersede the user's required B2/C ROM runs. No runtime state comparison, native C record-count measurement, or performance measurement was performed here.
+
+Evidence is retained under `tests/exp001-runtime/build/`: `observer-window-desktop-build.log`, `observer-window-compiler.txt`, `observer-window-test-build.log`, `observer-window-test-run.log`, `window-hash-regression-build.log`, `window-hash-regression-run.log`, synthetic `window-run-1-*`/`window-hash-regression-1-*` files, and `window-cli-1/results.json` with per-case stderr/stdout. The existing hiro destructor wrote a window-metrics cache under `window-cli-1/hiro/windows.bml`, inside the ignored evidence directory; normal bsnes settings were not initialized by those rejected invocations.
+
+### 12.6 Exact recommended B2 and C command templates
+
+Run from **MSYS2 UCRT64**, using the newly built observer executable for both runs. Supply the same authorized ROM and deterministic starting settings/persistent memory used for A1/A2/B. Restore equivalent starting conditions before each run because the normal frontend can save settings/game memory. Use distinct, new output paths with existing parent directories. No ROM path was supplied to this implementation task, so these commands were not executed here.
+
+B2 — observer disabled, 600 native callbacks:
+
+```sh
+cd /c/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-001
+./bsnes/out/bsnes.exe --settings="<SETTINGS_PATH>" \
+  --exp001-frame-hash="<OUTPUT_DIR>/B2-600-frames.csv" \
+  --exp001-frame-count=600 "<AUTHORIZED_ROM_PATH>"
+echo "B2 exit: $?"
+```
+
+C — the same executable, observe the interval producing callback 500 only:
+
+```sh
+cd /c/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-001
+./bsnes/out/bsnes.exe --settings="<SETTINGS_PATH>" \
+  --exp001-frame-hash="<OUTPUT_DIR>/C-600-frames.csv" \
+  --exp001-frame-count=600 \
+  --exp001-observer-csv="<OUTPUT_DIR>/C-callback-500-provenance.csv" \
+  --exp001-observer-start-callback=500 \
+  --exp001-observer-callback-count=1 "<AUTHORIZED_ROM_PATH>"
+echo "C exit: $?"
+```
+
+C also creates `C-callback-500-provenance.csv.summary.txt`. Require requested start 500/count 1/end 501, started/completed true, observed callbacks 1, total native callbacks 600, successful export, disabled observer at export, and explicit count/drop/overflow values. If overflow occurs, preserve that evidence and treat provenance as incomplete even if native hashes match. Do not preemptively increase capacity.
+
+Compare the entire B2 and C frame-hash files to each other and to the prior A1/A2/B evidence, including all 600 ordered rows and completion footers. Their expected common digest is the user-provided value in section 12.1 **only if the actual reruns establish equality**. Inspect real provenance separately for meaningful BG/map/tile activity, timing/order, field interpretation, and bounded-buffer pressure. Emulator-state and performance questions remain open; matching framebuffer hashes alone cannot prove every CPU-visible side effect is unchanged.
