@@ -251,4 +251,39 @@ Read the experiment specification and source audit before implementation:
 
 `docs/experiments/EXP-004/SOURCE_AUDIT_AND_IMPLEMENTATION_PLAN.md`
 
+### bsnes Native Output-Bounds Investigation
+
+The worktree:
+
+`experiments/bsnes-native-output-bounds/`
+
+is writable only for:
+
+**Separate native-baseline investigation of the inherited bsnes output-buffer / late-scanline destination issue discovered by EXP-004-P0**
+
+Expected branch:
+
+`gtc-hd/investigate-native-output-bounds`
+
+Expected baseline:
+
+`7d5aa1e656b9171524d01b1b22917197d8121cb4`
+
+For this investigation:
+
+- this checkout is NOT an EXP-004 implementation worktree;
+- it is NOT production GTC-HD source;
+- it begins from the pristine audited upstream bsnes baseline specified above;
+- modifications are permitted only when a task explicitly authorizes them;
+- the initial investigation phase is **SOURCE ARCHAEOLOGY ONLY**;
+- do not repair, resize, clamp, suppress or otherwise alter native output behavior unless a later task explicitly authorizes a controlled candidate correction;
+- do not modify `upstream/bsnes/`;
+- do not modify any EXP-001, EXP-002, EXP-003 or EXP-004 worktree;
+- do not merge this branch into upstream `master`;
+- any successful correction still requires separate GTC-HD review and revalidation; it does not select bsnes as the project foundation.
+
+Read the P0 report before investigation:
+
+`docs/experiments/EXP-004/P0_OUTPUT_BOUNDS_REPORT.md`
+
 
