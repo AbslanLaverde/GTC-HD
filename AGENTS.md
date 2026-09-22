@@ -234,7 +234,8 @@ Expected baseline:
 For EXP-004:
 
 - modifications may be made inside `experiments/bsnes-exp-004/` only when explicitly authorized by the task;
-- source implementation requires investigation and documented disposition of **EXP-004-P0 — Native Output Destination Bounds Investigation**, followed by explicit implementation authorization;
+- **EXP-004-P0 — Native Output Destination Bounds Investigation** completed with disposition **STOP FOR SEPARATE NATIVE-BASELINE INVESTIGATION**;
+- EXP-004 source implementation remains blocked until the separate native-baseline investigation is completed, its disposition is documented, and implementation is explicitly re-authorized;
 - worktree registration does not authorize source changes during a documentation-only task;
 - commits may be made only on its experiment branch when explicitly requested;
 - do not modify `upstream/bsnes/`;

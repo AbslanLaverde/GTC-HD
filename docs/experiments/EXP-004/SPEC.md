@@ -2,7 +2,7 @@
 
 Date: September 22, 2026.
 
-**Status:** REVISED AFTER SOURCE AUDIT / PREREQUISITE INVESTIGATION PENDING
+**Status:** P0 COMPLETE / EXP-004 IMPLEMENTATION BLOCKED / SEPARATE NATIVE-BASELINE INVESTIGATION REQUIRED
 
 **Research target:** bsnes cycle PPU
 
@@ -14,7 +14,7 @@ Date: September 22, 2026.
 
 **Production architecture impact:** None — experimental research only
 
-**Implementation gate:** EXP-004 source implementation is not authorized until **EXP-004-P0 — Native Output Destination Bounds Investigation** has been investigated and its disposition documented. Completion of P0 does not itself authorize implementation; a subsequent task must explicitly authorize source changes.
+**Implementation gate:** EXP-004 color-math provenance implementation remains unauthorized. A separately scoped native-baseline investigation must determine the intended output/storage boundary and baseline disposition before the EXP-004 gate may be reconsidered. Source implementation remains blocked until that investigation is completed, its disposition is documented, and implementation is explicitly re-authorized.
 
 This document specifies an experiment. The source audit informs its design; source inspection does not verify the EXP-004 preservation or passivity hypothesis. EXP-004 is neither implemented nor verified by this specification revision.
 
@@ -57,25 +57,25 @@ The [audit](SOURCE_AUDIT_AND_IMPLEMENTATION_PLAN.md) supplies exact source refer
 
 ### 3.2 EXP-004-P0 — Native Output Destination Bounds Investigation
 
-**P0 is a mandatory prerequisite stage of EXP-004, not a new numbered main experiment. It precedes EXP-004 source implementation.**
+**P0 is complete for the documented investigation scope. It is a prerequisite stage of EXP-004, not a new numbered main experiment.**
 
-**SOURCE OBSERVATION:** The frozen path appears to calculate some logical output destinations beyond the declared `uint16 output[512 * 480]` storage. The audit identifies late-scanline placement, live versus latched overscan controls, interlace/field placement, and overscan clearing as relevant. Returning zero from below/above does not necessarily suppress `Screen::run()` stores.
+**EXP-004-P0 disposition: STOP FOR SEPARATE NATIVE-BASELINE INVESTIGATION**
 
-**UNKNOWN:** Runtime memory effects, compiler consequences and any dependence on native layout have not been established. The specification must not presume either harmlessness or a particular corruption effect.
+Durable evidence: [P0 output bounds report](P0_OUTPUT_BOUNDS_REPORT.md) and [P0 output bounds matrix](P0_OUTPUT_BOUNDS_MATRIX.csv), under `docs/experiments/EXP-004/`. The report retains the frozen baseline identity, source evidence, controlled fixture results and limitations; the matrix records the documented boundary cases.
 
-P0 must determine and document:
+The completed P0 findings are:
 
-1. The exact logical destinations attempted by the frozen baseline, including sample order, A/B destinations and aliasing.
-2. Relevant V, live/latched overscan, interlace and field cases; boundaries must include V=0, 1, 224, 225, 232, 233, 239, 240 and 241, plus other cases required by the source.
-3. Which attempted stores fall inside or outside the declared callback buffer, and how pointer construction and the overscan-clear path affect the analysis.
-4. How an observer could capture the actual store value and integer logical destination without changing native memory layout, adding framebuffer readback, changing store ordering, or silently repairing behavior.
-5. Which consequences are source-established, host-tested or still UNKNOWN, and whether a documented restriction to valid destinations is sufficient for the planned experiment.
+1. **SOURCE OBSERVATION:** The declared `uint16 output[512 * 480]` subobject contains 245,760 entries, with valid indices 0–245,759.
+2. **SOURCE OBSERVATION / BOUNDS EVIDENCE:** Native logical stores exceed that declared subobject on the documented late scanlines: V=233–240 with latched overscan off, and V=240 with latched overscan on. Returning zero for a sample does not suppress its store.
+3. **SOURCE OBSERVATION / BOUNDS EVIDENCE:** The overscan-clear path also exceeds the declared subobject; its final cleared row reaches indices 245,760–246,783.
+4. **HOST-MEASURED LAYOUT:** The tested UCRT64 GCC 16.2.0 layout places `lightTable` immediately after `output`, with no gap. This is evidence for the tested compiler/layout, not a guarantee of native undefined-behavior consequences.
+5. **CONTROLLED FIXTURE EVIDENCE:** A defined-storage fixture demonstrated layout-sensitive effects capable of changing a later valid output sample. The fixture kept accesses within a single backing allocation; it does not establish the exact consequences of crossing the native array-subobject boundary.
+6. **UNKNOWN:** Exact native undefined-behavior/runtime consequences remain **UNKNOWN**, including compiler effects and real-ROM reachability. Neither harmlessness nor a particular native corruption effect is established.
+7. **FIXTURE EVIDENCE / INFERENCE:** Capturing the value supplied to a store without framebuffer readback is feasible, but destination-validity accounting alone does not resolve the baseline defect or establish passive observation against it.
 
-Establish logical bounds before attempting any potentially invalid dereference. Any executable investigation must be a separately authorized, controlled prerequisite task; a guarded fixture or sanitizer result must state its limitations relative to the frozen native layout and supported compiler.
+**EXP-004 color-math provenance implementation remains unauthorized.** A separately scoped native-baseline investigation must determine the intended output/storage boundary and baseline disposition before the EXP-004 gate may be reconsidered. Source implementation remains blocked until that investigation is completed, its disposition is documented, and implementation is explicitly re-authorized.
 
-P0 must retain baseline identity, source evidence, a destination/case table, any focused evidence collected, unresolved consequences, and a documented disposition for the implementation gate. If the issue prevents passive observation or valid output association, implementation remains blocked pending that disposition.
-
-**EXP-004 instrumentation must not silently fix the native bounds issue.** A native baseline repair, if required, must be separately scoped and authorized. It would require reconsidering the frozen baseline and the validity of retained deterministic references, including regeneration where necessary.
+**EXP-004 instrumentation must not silently fix the native bounds issue.** No repair is proposed or selected by this specification. Any native baseline repair, if required, must be separately scoped and authorized, with its baseline and deterministic-reference implications documented.
 
 ## 4. Native color-path behavior to preserve
 
@@ -200,7 +200,7 @@ Do not create a fictitious previous winner for a seed. Missing the seed on activ
 
 **HYPOTHESIS:** The cycle PPU permits passive preservation of native color decisions, actual operands, effective operation, pre-brightness result and native store values, with current and carried source provenance, without changing authoritative execution.
 
-The source audit identifies plausible observation points. Implementation, focused tests and runtime evidence must still determine whether this hypothesis is supported under particular conditions. P0 must first establish the output-destination constraints.
+The source audit identifies plausible observation points. Implementation, focused tests and runtime evidence must still determine whether this hypothesis is supported under particular conditions. P0 is complete with the STOP disposition in section 3.2; the separate native-baseline investigation and explicit implementation re-authorization remain required.
 
 ## 7. Primary research questions
 
@@ -334,22 +334,23 @@ This is an experimental checkout, not production GTC-HD source. Registration doe
 
 The required progression is:
 
-1. **P0:** Investigate native output destination bounds and document the disposition.
-2. **After explicit implementation authorization:** Define owned records/history and the narrow EXP-003 handoff.
-3. Add passive hooks at native seed, selection, effective-decision, arithmetic-result and store-value boundaries; implement lifecycle handling.
-4. Extend the existing callback-window infrastructure and focused native-method tests.
-5. Complete the supported UCRT64 desktop build and deterministic runtime comparison.
-6. Write curated results, with separate conclusions for the paths actually supported.
+1. **P0 COMPLETE:** Disposition **STOP FOR SEPARATE NATIVE-BASELINE INVESTIGATION**, as recorded in section 3.2.
+2. **Separate prerequisite:** Complete the separately scoped native-baseline investigation and document its disposition, including the intended output/storage boundary, before reconsidering the EXP-004 gate.
+3. **Only after explicit implementation re-authorization:** Define owned records/history and the narrow EXP-003 handoff.
+4. Add passive hooks at native seed, selection, effective-decision, arithmetic-result and store-value boundaries; implement lifecycle handling.
+5. Extend the existing callback-window infrastructure and focused native-method tests.
+6. Complete the supported UCRT64 desktop build and deterministic runtime comparison.
+7. Write curated results, with separate conclusions for the paths actually supported.
 
 Do not modify upstream or other experiment worktrees. A baseline repair, if necessary, is a separate task rather than an instrumentation stage.
 
 ## 13. Focused host-test requirements
 
-These are planned tests, not completed evidence. Use actual native methods where practical and retain the scope of synthetic surrounding state. Native math remains the runtime authority; independent calculations are test oracles only.
+Except for the completed P0 evidence linked in section 3.2, these are planned tests, not completed evidence. EXP-004 implementation tests remain subject to the implementation gate. Use actual native methods where practical and retain the scope of synthetic surrounding state. Native math remains the runtime authority; independent calculations are test oracles only.
 
 | Stage / test family | Required coverage |
 |---|---|
-| **Stage/Test 0 — P0 bounds** | Frozen logical destinations, relevant V/overscan/interlace/field boundaries, skipped stores, A/B aliasing, pointer construction and overscan clear; declared-buffer validity and passive observation strategy |
+| **Stage/Test 0 — P0 bounds (complete; STOP disposition)** | Completed scope and limitations are recorded in the report and matrix linked in section 3.2: frozen logical destinations, relevant V/overscan/interlace/field boundaries, skipped stores, A/B aliasing, pointer construction and overscan clear; declared-buffer validity and passive observation strategy |
 | No math / clipping | Enabled/disabled source eligibility, allowed/clipped primary, no second operand, explicit skip reason, V=0 no write |
 | Fixed-color arithmetic | Add, subtract, half add/subtract; zero/max channels, odd values, saturation and borrow boundaries; actual native operands and returned result captured |
 | Sub-screen arithmetic | Add/subtract and halves; distinct main/sub provenance and actual operand values |
@@ -374,7 +375,7 @@ Use actual native light-table construction or its extracted native initializatio
 
 ## 14. Runtime validation plan
 
-After P0 and authorized implementation/build/host validation, use the established deterministic Super Mario World environment first.
+Only after the separate native-baseline investigation and its documented disposition, explicit EXP-004 implementation re-authorization, and completed implementation/build/host validation, use the established deterministic Super Mario World environment first.
 
 | Run | Required configuration |
 |---|---|
@@ -430,7 +431,7 @@ EXP-004 may eventually be marked **VERIFIED FOR TESTED CONDITIONS** only for exp
 
 Required evidence includes:
 
-1. P0 completed with a documented disposition, destination constraints and any baseline/reference implications.
+1. P0 completion plus a completed separate native-baseline investigation, its documented disposition (including destination constraints and any baseline/reference implications), and explicit EXP-004 implementation re-authorization.
 2. Focused native-method tests passed, including actual light-table behavior and the claimed temporal paths.
 3. Supported UCRT64 desktop build succeeded with exact source/build/executable identity retained.
 4. Disabled execution matched the valid deterministic reference, and B/C ordered native framebuffer sequences matched over all 1,800 callbacks.
@@ -451,7 +452,7 @@ No source observation or existing EXP-003 test pass is, by itself, EXP-004 runti
 | Lowres evidence sufficient, hires evidence incomplete | **LOW-RES SUPPORTED FOR TESTED CONDITIONS** and **HIRES INVESTIGATING**, reported separately |
 | Completed capture lacks useful arithmetic | **VALID CAPTURE, INSUFFICIENT COVERAGE**; choose another deterministic window after review |
 | Case only exercised in host tests | **IMPLEMENTED / HOST-TESTED, NOT REAL-ROM EXERCISED**, if and when those stages actually occur |
-| P0 disposition unresolved | Prerequisite pending; no EXP-004 source implementation authorization |
+| P0 complete: **STOP FOR SEPARATE NATIVE-BASELINE INVESTIGATION** | EXP-004 implementation blocked until the separate native-baseline investigation is completed, its disposition is documented, and implementation is explicitly re-authorized |
 | Invalid or unestablished output association | Restrict the claim and expose destination validity; never silently repair or remap native behavior |
 | Unknown history or incomplete lineage | Explicit UNKNOWN for the missing semantic part, not inferred provenance or discarded known result |
 | Hardware first-sample behavior unestablished | **UNCONFIRMED**; native-source/host evidence does not settle hardware behavior |
