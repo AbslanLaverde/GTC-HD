@@ -1,215 +1,3 @@
-\# GTC-HD Research Workspace
-
-
-
-\## Purpose
-
-
-
-This workspace supports architecture and source-code research for GTC-HD.
-
-
-
-GTC-HD is an experimental modern enhancement rendering system for SNES games.
-
-
-
-Guiding principle:
-
-
-
-> \*\*Enhance the pixel art. Never erase the pixel art.\*\*
-
-
-
-The project is currently in:
-
-
-
-\*\*Phase 0 — Discovery / Research / Architecture\*\*
-
-
-
-Read `docs/PROJECT_STATE.md` before performing substantive GTC-HD research.
-
-
-
-\## Authority Model
-
-
-
-Do not confuse upstream emulator repositories with GTC-HD project authority.
-
-
-
-\### GTC-HD project authority
-
-
-
-Files under `docs/` describe GTC-HD project state, research findings, and architectural decisions.
-
-
-
-Do not infer an accepted GTC-HD decision unless it is explicitly documented as accepted.
-
-
-
-\### Upstream source authority
-
-
-
-Repositories under `upstream/` are external projects being investigated.
-
-
-
-Their checked-out source code is authoritative only for claims about that specific upstream implementation and revision.
-
-
-
-For example:
-
-
-
-`upstream/bsnes/` may be used to determine how the checked-out version of bsnes works.
-
-
-
-It is NOT the GTC-HD codebase.
-
-
-
-It is NOT evidence that GTC-HD has selected bsnes.
-
-
-
-It is NOT authoritative for GTC-HD architectural decisions.
-
-
-
-\## Current Research Status
-
-
-
-The SNES emulator/core foundation and PPU interception boundary are:
-
-
-
-\*\*INVESTIGATING\*\*
-
-
-
-No emulator/core has been selected.
-
-
-
-\## Working Rules
-
-
-
-Unless a task explicitly says otherwise:
-
-
-
-\* Treat repositories under `upstream/` as read-only research targets.
-
-\* Do not modify upstream source code.
-
-\* Do not commit changes inside upstream repositories.
-
-\* Do not implement GTC-HD inside an upstream repository.
-
-\* Record the exact Git branch and commit SHA used for substantive research.
-
-\* Ground source-code findings in actual repository paths, classes, functions, methods, and data structures.
-
-\* Clearly distinguish:
-
-
-
-&#x20; \* source-code observation;
-
-&#x20; \* inference;
-
-&#x20; \* hypothesis;
-
-&#x20; \* uncertainty.
-
-\* Never convert brainstorming or upstream implementation choices into accepted GTC-HD architecture.
-
-
-
-\## Research Outputs
-
-
-
-Write GTC-HD research findings outside upstream repositories.
-
-
-
-Preferred location:
-
-
-
-`docs/research/`
-
-
-
-Research reports should normally include:
-
-
-
-\* repository identity;
-
-\* branch and commit SHA;
-
-\* research question;
-
-\* source-code evidence;
-
-\* findings;
-
-\* uncertainties;
-
-\* implications for GTC-HD;
-
-\* experiments still required;
-
-\* recommended next research step.
-
-
-
-\## Accuracy Priority
-
-
-
-GTC-HD prioritizes:
-
-
-
-1\. Correct game behavior.
-
-2\. Accurate SNES execution.
-
-3\. Faithful original rendering semantics.
-
-4\. Universal enhancement.
-
-5\. Optional game-specific enhancement.
-
-6\. Experimental visual effects.
-
-
-
-Do not recommend compromising SNES execution merely to simplify enhanced rendering.
-
-
-
-\## Current Primary Research Question
-
-
-
-Determine which SNES emulation architecture provides the strongest foundation for GTC-HD and where sufficiently rich PPU state can be intercepted to support a modern enhancement renderer without compromising accurate SNES execution.
-
 # GTC-HD Research Workspace
 
 ## Purpose
@@ -424,5 +212,42 @@ For EXP-003:
 Read the experiment specification before implementation:
 
 `docs/experiments/EXP-003/SPEC.md`
+
+### EXP-004
+
+The worktree:
+
+`experiments/bsnes-exp-004/`
+
+is writable only for:
+
+**EXP-004 — Color Math and Native Sample Provenance**
+
+Expected branch:
+
+`gtc-hd/exp-004-color-math-provenance`
+
+Expected baseline:
+
+`76bdb9250befa62fcbf23fcff2ef962fe2f58215`
+
+For EXP-004:
+
+- modifications may be made inside `experiments/bsnes-exp-004/` only when explicitly authorized by the task;
+- source implementation requires investigation and documented disposition of **EXP-004-P0 — Native Output Destination Bounds Investigation**, followed by explicit implementation authorization;
+- worktree registration does not authorize source changes during a documentation-only task;
+- commits may be made only on its experiment branch when explicitly requested;
+- do not modify `upstream/bsnes/`;
+- do not modify any EXP-001, EXP-002 or EXP-003 worktree;
+- preserve native bsnes cycle-PPU color math, timing, execution-visible side effects, serializer payload and output-store ordering;
+- do not silently repair native output bounds or change native memory layout as part of instrumentation;
+- experimental provenance code is evidence-gathering code, not accepted GTC-HD architecture;
+- a successful experiment does not select bsnes as the GTC-HD foundation.
+
+Read the experiment specification and source audit before implementation:
+
+`docs/experiments/EXP-004/SPEC.md`
+
+`docs/experiments/EXP-004/SOURCE_AUDIT_AND_IMPLEMENTATION_PLAN.md`
 
 

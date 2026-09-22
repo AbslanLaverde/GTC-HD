@@ -1,1964 +1,516 @@
-\# EXP-004 — Color Math and Native Sample Provenance
-
-
+# EXP-004 — Color Math and Native Sample Provenance
 
 Date: September 22, 2026.
 
+**Status:** REVISED AFTER SOURCE AUDIT / PREREQUISITE INVESTIGATION PENDING
 
+**Research target:** bsnes cycle PPU
 
-\*\*Status:\*\* PROPOSED / INVESTIGATING  
+**Experimental dependency:** EXP-003 composition provenance
 
-\*\*Research target:\*\* bsnes cycle PPU  
+**Frozen source baseline:** `76bdb9250befa62fcbf23fcff2ef962fe2f58215`
 
-\*\*Experimental dependency:\*\* EXP-003 composition provenance  
+**Design evidence:** [Source audit and implementation plan](SOURCE_AUDIT_AND_IMPLEMENTATION_PLAN.md)
 
-\*\*Proposed source baseline:\*\* EXP-003 implementation commit `76bdb9250`  
+**Production architecture impact:** None — experimental research only
 
-\*\*Production architecture impact:\*\* None — experimental research only
+**Implementation gate:** EXP-004 source implementation is not authorized until **EXP-004-P0 — Native Output Destination Bounds Investigation** has been investigated and its disposition documented. Completion of P0 does not itself authorize implementation; a subsequent task must explicitly authorize source changes.
 
+This document specifies an experiment. The source audit informs its design; source inspection does not verify the EXP-004 preservation or passivity hypothesis. EXP-004 is neither implemented nor verified by this specification revision.
 
+## 1. Purpose
 
-\---
+EXP-001, EXP-002 and EXP-003 established preservation of tiled-BG, OBJ and main/sub composition provenance under their tested conditions. EXP-004 investigates the next semantic boundary:
 
+> Can GTC-HD preserve the native color-math decisions, operands, operations, pre-brightness results and resulting native PPU output samples while retaining the source provenance established by EXP-003 and without replacing or disturbing authoritative cycle-PPU execution?
 
+The experiment remains one staged investigation. It must account for current composition winners, carried native state where consumed, and both sample results emitted by `Screen::run()`.
 
-\## 1. Purpose
+The guiding principle remains:
 
+> **Enhance the pixel art. Never erase the pixel art.**
 
+Original game behavior, accurate SNES execution, faithful rendering semantics and pixel-art identity have priority over enhancement effects.
 
-EXP-001 demonstrated preservation of tiled-background provenance.
+## 2. Why this matters to GTC-HD
 
+A selected main or sub source is not necessarily equivalent to an emitted native sample. Native processing can gate math, clip an operand, select current sub or fixed color, consume carried main state, add or subtract, halve, and apply brightness and output encoding conversion.
 
+A framebuffer alone cannot explain whether an output came from direct display, an arithmetic combination, clipping, or a temporal dependency. A future enhancement renderer could use preserved evidence to respect those distinctions when handling lighting, replacement assets, visibility or debugging.
 
-EXP-002 demonstrated preservation of OBJ provenance through native sprite overlap.
+Those product capabilities are not implemented by EXP-004. The experiment asks whether the native semantic path can survive, with an exact native numeric reference and explicit limits on what is known.
 
+## 3. Source-grounded starting point and mandatory prerequisite
 
+### 3.1 Audit authority
 
-EXP-003 demonstrated preservation of native main- and sub-screen composition winners.
-
-
-
-Those experiments establish an increasingly useful semantic chain:
-
-
+The completed source audit examined the EXP-004 worktree at the frozen EXP-003 implementation:
 
 ```text
-
-BG provenance ───────┐
-
-&#x20;                    │
-
-OBJ provenance ──────┤
-
-&#x20;                    ↓
-
-&#x20;             native candidates
-
-&#x20;                    ↓
-
-&#x20;           main/sub composition
-
-&#x20;              ↙           ↘
-
-&#x20;       MAIN winner     SUB winner
-
+76bdb9250befa62fcbf23fcff2ef962fe2f58215
+Implement EXP-003 composition provenance observer
 ```
 
+The earlier upstream baseline is `7d5aa1e656b9171524d01b1b22917197d8121cb4`. Relevant source includes `bsnes/sfc/ppu/screen.cpp`, `screen.hpp`, `window.cpp`, `io.cpp`, `serialization.cpp`, `main.cpp`, `ppu.cpp` and `ppu.hpp`, together with EXP-003's observer and runtime controller.
 
+The [audit](SOURCE_AUDIT_AND_IMPLEMENTATION_PLAN.md) supplies exact source references and distinguishes source observations, existing host-test evidence, inferences and unknowns. Its findings are design constraints for this experiment, not new runtime verification. EXP-003's existing results retain their documented scope.
 
-The next unresolved boundary is how those winners participate in native SNES color processing and become the samples written by the cycle PPU.
+### 3.2 EXP-004-P0 — Native Output Destination Bounds Investigation
 
+**P0 is a mandatory prerequisite stage of EXP-004, not a new numbered main experiment. It precedes EXP-004 source implementation.**
 
+**SOURCE OBSERVATION:** The frozen path appears to calculate some logical output destinations beyond the declared `uint16 output[512 * 480]` storage. The audit identifies late-scanline placement, live versus latched overscan controls, interlace/field placement, and overscan clearing as relevant. Returning zero from below/above does not necessarily suppress `Screen::run()` stores.
 
-EXP-004 asks:
+**UNKNOWN:** Runtime memory effects, compiler consequences and any dependence on native layout have not been established. The specification must not presume either harmlessness or a particular corruption effect.
 
+P0 must determine and document:
 
+1. The exact logical destinations attempted by the frozen baseline, including sample order, A/B destinations and aliasing.
+2. Relevant V, live/latched overscan, interlace and field cases; boundaries must include V=0, 1, 224, 225, 232, 233, 239, 240 and 241, plus other cases required by the source.
+3. Which attempted stores fall inside or outside the declared callback buffer, and how pointer construction and the overscan-clear path affect the analysis.
+4. How an observer could capture the actual store value and integer logical destination without changing native memory layout, adding framebuffer readback, changing store ordering, or silently repairing behavior.
+5. Which consequences are source-established, host-tested or still UNKNOWN, and whether a documented restriction to valid destinations is sufficient for the planned experiment.
 
-> Can GTC-HD preserve the native color-math decisions, operands, operations, and resulting native PPU samples while retaining the source provenance established by EXP-003 and without replacing or disturbing authoritative PPU execution?
+Establish logical bounds before attempting any potentially invalid dereference. Any executable investigation must be a separately authorized, controlled prerequisite task; a guarded fixture or sanitizer result must state its limitations relative to the frozen native layout and supported compiler.
 
+P0 must retain baseline identity, source evidence, a destination/case table, any focused evidence collected, unresolved consequences, and a documented disposition for the implementation gate. If the issue prevents passive observation or valid output association, implementation remains blocked pending that disposition.
 
+**EXP-004 instrumentation must not silently fix the native bounds issue.** A native baseline repair, if required, must be separately scoped and authorized. It would require reconsidering the frozen baseline and the validity of retained deterministic references, including regeneration where necessary.
 
-\---
+## 4. Native color-path behavior to preserve
 
+The following source observations come from the completed audit. Requirements describe what the future observer must preserve.
 
+### 4.1 Native ordering
 
-\## 2. Why this matters to GTC-HD
+**SOURCE OBSERVATION:** `Screen::run()` evaluates `below(hires)` before `above()`, then performs the first light-table lookup and store before the second lookup and store. There is no intervening native timing step within this sequence.
 
+Preserve that order. Do not model below and above as simultaneous, precompute the second lookup before the first store, or call native paths a second time.
 
+### 4.2 Selected-source eligibility and color windows
 
-A main-screen winner and sub-screen winner are still not necessarily equivalent to the color ultimately produced by the SNES PPU.
+**SOURCE OBSERVATION:** The final selected main source supplies pre-window math eligibility through the BG1–BG4, OBJ or backdrop enable. OBJ additionally requires `obj.output.above.palette >= 192` in `Screen::above()`. This restriction is not an OBJ overlap decision or current-sub eligibility rule.
 
+Layer windows suppress composition candidates before winner selection. Color-window outputs later control primary-color permission/clipping and math gating. A selected winner can remain the winner even when its color is clipped.
 
+Capture the selected-source eligibility and effective native gates separately. Reuse EXP-003's current color-window values where valid; those current values must not be substituted for carried controls consumed by hires below.
 
-Native color processing may:
+### 4.3 Effective second operand
 
+The diagnostic model must distinguish at least:
 
+| Kind | Meaning when actually consumed |
+|---|---|
+| `None` | No second operand; no native blend arithmetic occurred |
+| `CurrentSub` | Current resolved sub color used by the above path |
+| `FixedColor` | Current fixed-color value used by the native path |
+| `CarriedMain` | Raw main color carried from the last active native main producer and used by hires below |
 
-\- allow or suppress color math for the selected main source;
+**SOURCE OBSERVATION:** When above math is enabled, requested sub blending with native `math.transparent` falls back to fixed color and disables halving. Here transparent means final sub priority zero, not a numerically black color. A colored backdrop can trigger fallback; a nontransparent black source need not.
 
-\- clip the primary operand;
+Preserve configured preference and effective consumption separately. Record fallback only where the native path actually applies it. A gated-off operation has `None`, even if configuration would otherwise request sub/fixed math.
 
-\- use the sub-screen source;
+### 4.4 Native arithmetic
 
-\- substitute fixed color;
+Capture actual native operands, operation, effective half state and typed result for passthrough/no math, add, subtract, add + half and subtract + half. Preserve clipping and skip reasons independently.
 
-\- add two colors;
+Native `blend()` remains authoritative. Do not reconstruct the runtime result from a second arithmetic implementation or infer operands backward from a saturated result. Independent per-channel arithmetic may be used only as a test oracle. Tests must distinguish native half-add from saturating addition followed by halving.
 
-\- subtract one color from another;
+### 4.5 Brightness and encoding
 
-\- halve the result;
-
-\- apply display brightness;
-
-\- produce different left/right samples in hires or pseudo-hires modes.
-
-
-
-A framebuffer-only enhancement renderer sees only the result.
-
-
-
-That loses information about how the result was produced.
-
-
-
-For example, two visually similar pixels may have completely different native histories:
-
-
+**SOURCE OBSERVATION:** This path converts component positions as well as applying brightness:
 
 ```text
-
-BG1 directly displayed
-
+selected raw BGR555 source
+→ native clipping / color math
+→ pre-brightness BGR555 result
+→ brightness level and native light-table processing
+→ RGB555 value supplied to native framebuffer stores
 ```
 
+Require explicit encodings at both boundaries. In the audited table initialization, maximum brightness maps red `0x001f` to `0x7c00`. Brightness 15 is not a raw-word identity conversion.
 
+Capture the actual native table result supplied to each store. Encoding-aware tests must use actual native light-table behavior. EXP-003's identity light-table fixture is not evidence of brightness or encoding correctness.
 
-versus:
+## 5. Hires, mixed lifetimes and scanline history
 
+### 5.1 Bounded temporal dependency
 
+**SOURCE OBSERVATION:** In true hires or pseudo-hires, below can consume:
 
-```text
+- the current sub source and its resolved raw color;
+- the carried previous active main source;
+- carried effective math-enable state;
+- carried primary-color permission;
+- carried effective operand-choice state;
+- carried effective half state;
+- the current add/subtract direction;
+- the current fixed color when that operand is selected.
 
-BG1 + SUB BG2
+The carried main is the previous active main's **RAW selected color**, before clipping, blending or brightness. It is **NOT the previous final blended sample**. Therefore the required history is bounded; an unbounded recursive graph of earlier blended results is not required by this source path.
 
-```
+Conceptually, for active hires below:
 
+| Effective branch | Primary | Second operand and arithmetic |
+|---|---|---|
+| Carried math disabled | Current sub, allowed or clipped using carried permission | `None`; no math |
+| Carried math enabled, carried blend selects main | Current sub, allowed or clipped using carried permission | `CarriedMain`; current direction and carried half |
+| Carried math enabled, carried blend selects fixed | Current sub, allowed or clipped using carried permission | `FixedColor` from current controls; current direction and carried half |
 
+Current above subsequently uses current main, current eligibility/window decisions, and current sub/fixed selection. Current main must not be attached to a below sample that actually consumes carried main.
 
-versus:
+True hires changes BG sampling phases; pseudo-hires changes Screen emission without making the low-resolution BG path a true-hires producer. Test both.
 
+### 5.2 Screen::Math lifetimes
 
+**SOURCE OBSERVATION:** All seven `Screen::Math` fields are persistent and serialized, but they have mixed update lifetimes.
 
-```text
+| Native field | Required lifetime distinction |
+|---|---|
+| `above.color` | Replaced by active above with the raw selected main color; below can consume its carried value |
+| `above.colorEnable` | Set by active above from current primary-color permission; below consumes the carried permission |
+| `below.color` | Refreshed by active below with current sub/backdrop color; above can consume it in the same composition point |
+| `below.colorEnable` | Selected-main eligibility, then current math-window gating in above; carried effective math-enable for below |
+| `transparent` | Refreshed by active below from sub priority zero; used by above for fallback |
+| `blendMode` | Updated by above only when math is enabled; otherwise stored value can remain from an older arithmetic point |
+| `colorHalve` | Updated by above only when math is enabled; otherwise stored value can remain from an older arithmetic point |
 
-OBJ - fixed color
+History tracking must follow the **last native state producer**, not blindly diagnostic record N-1. Native skips can preserve all Math state across several composition records. A no-math above updates main/color permissions while leaving blend/half stored but unused on the following no-math below.
 
-```
+A mode transition alone does not reset native Math. Preserve known continuity when the observer actually saw it, including a low-resolution predecessor to a hires sample. Invalidate diagnostic provenance when observation continuity or producer identity is missing; do not reset native state or invent a new producer to simplify the model.
 
+Copied values, source-lineage validity and carried-control origin require separate validity. Retention success must not determine native history: an overflowed record is not permission to link to an unrelated last-retained record.
 
+### 5.3 NativeScanlineSeed
 
-versus:
+Represent an observed native scanline initialization explicitly as `NativeScanlineSeed`.
 
+**SOURCE OBSERVATION:** The audited `Screen::scanline()` initializes both Math colors from the native palette-zero lookup, clears both enable fields, sets transparent true, and leaves effective blend/half false. In uninterrupted execution from that seed, the first active hires below returns zero. This does not prove that its current sub source was transparent or black.
 
+The source comments explicitly say the exact initializations are not confirmed on hardware. Separate:
 
-```text
+- observed bsnes seed values and their native numeric consequences;
+- an observed active predecessor source;
+- unavailable history;
+- **hardware initialization: UNCONFIRMED**.
 
-clipped main + sub
+Do not create a fictitious previous winner for a seed. Missing the seed on activation requires UNKNOWN history where no observed producer establishes it. The exact first-hires-sample SNES hardware behavior remains UNCONFIRMED unless later evidence establishes it.
 
-```
+## 6. Hypothesis
 
+**HYPOTHESIS:** The cycle PPU permits passive preservation of native color decisions, actual operands, effective operation, pre-brightness result and native store values, with current and carried source provenance, without changing authoritative execution.
 
+The source audit identifies plausible observation points. Implementation, focused tests and runtime evidence must still determine whether this hypothesis is supported under particular conditions. P0 must first establish the output-destination constraints.
 
-For future GTC-HD features such as lighting, material treatment, transparency-like enhancement, replacement assets, spatial interpretation, or renderer debugging, these distinctions may matter.
-
-
-
-EXP-004 therefore investigates whether GTC-HD can preserve:
-
-
-
-> not merely the color the SNES produced, but the native semantic path that produced it.
-
-
-
-These future features are not implemented by this experiment.
-
-
-
-\---
-
-
-
-\## 3. Source-grounded starting point
-
-
-
-The experiment must begin from the actual bsnes cycle-PPU behavior rather than from a simplified model of SNES color math.
-
-
-
-At audited upstream commit:
-
-
-
-```text
-
-7d5aa1e656b9171524d01b1b22917197d8121cb4
-
-```
-
-
-
-the relevant implementation is primarily:
-
-
-
-```text
-
-bsnes/sfc/ppu/screen.cpp
-
-bsnes/sfc/ppu/screen.hpp
-
-bsnes/sfc/ppu/window.cpp
-
-bsnes/sfc/ppu/io.cpp
-
-bsnes/sfc/ppu/serialization.cpp
-
-```
-
-
-
-EXP-004 starts experimentally from the frozen EXP-003 implementation:
-
-
-
-```text
-
-76bdb9250
-
-```
-
-
-
-because EXP-004 needs the main/sub source provenance that EXP-003 already preserves.
-
-
-
-This dependency does not make EXP-003 instrumentation production architecture.
-
-
-
-\---
-
-
-
-\## 4. Native color-path observations to preserve
-
-
-
-\### 4.1 Below is evaluated before above
-
-
-
-`Screen::run()` performs:
-
-
-
-```text
-
-below(hires)
-
-above()
-
-brightness/output
-
-```
-
-
-
-in that order.
-
-
-
-That ordering is semantically important.
-
-
-
-EXP-004 must not model the two paths as if they were evaluated simultaneously.
-
-
-
-\---
-
-
-
-\### 4.2 Composition color is not yet final output
-
-
-
-EXP-003 preserves the selected main/sub sources and their resolved pre-math colors.
-
-
-
-After those selections, the native screen path can still apply:
-
-
-
-\- source-specific color-math eligibility;
-
-\- color-window controls;
-
-\- fixed-color substitution;
-
-\- add/subtract;
-
-\- halving;
-
-\- brightness.
-
-
-
-EXP-004 must preserve the distinction between:
-
-
-
-```text
-
-source color
-
-```
-
-
-
-and:
-
-
-
-```text
-
-post-math color
-
-```
-
-
-
-and:
-
-
-
-```text
-
-brightness-adjusted native PPU output sample
-
-```
-
-
-
-\---
-
-
-
-\### 4.3 Color-math eligibility follows the selected main source
-
-
-
-The native main winner influences whether color math is enabled.
-
-
-
-The relevant source classes include:
-
-
-
-```text
-
-BG1
-
-BG2
-
-BG3
-
-BG4
-
-OBJ
-
-Backdrop
-
-```
-
-
-
-OBJ has an additional native palette restriction in the current bsnes implementation.
-
-
-
-EXP-004 must preserve the effective native decision rather than independently re-derive it later.
-
-
-
-\---
-
-
-
-\### 4.4 Color-window controls are distinct from layer-window controls
-
-
-
-EXP-003 investigated layer windows that suppress BG or OBJ composition candidates.
-
-
-
-EXP-004 concerns the separate color-window outputs used later in screen/color processing.
-
-
-
-These mechanisms must not be conflated.
-
-
-
-A source may successfully win main composition and still have its color treated differently by the later color-window path.
-
-
-
-\---
-
-
-
-\### 4.5 The second color-math operand is conditional
-
-
-
-The native path can use either:
-
-
-
-```text
-
-sub-screen color
-
-```
-
-
-
-or:
-
-
-
-```text
-
-fixed color
-
-```
-
-
-
-as the second operand.
-
-
-
-The effective operand is not always determined solely by the global fixed/sub configuration.
-
-
-
-In the inspected cycle PPU, a transparent sub-screen result can alter the effective blend behavior.
-
-
-
-EXP-004 must preserve the \*\*effective operand actually used\*\*, not merely the configured preference.
-
-
-
-\---
-
-
-
-\### 4.6 Native arithmetic must remain authoritative
-
-
-
-The cycle PPU implements saturated SNES 15-bit color arithmetic for:
-
-
-
-```text
-
-add
-
-subtract
-
-add + halve
-
-subtract + halve
-
-```
-
-
-
-EXP-004 must not introduce a second independently authoritative implementation into the observer.
-
-
-
-The experiment should observe:
-
-
-
-```text
-
-native operands
-
-native operation
-
-native result
-
-```
-
-
-
-rather than recomputing the result and treating the recomputation as truth.
-
-
-
-Independent arithmetic may be used in tests as a validation oracle, but not as the runtime source of provenance.
-
-
-
-\---
-
-
-
-\### 4.7 Brightness occurs after color math
-
-
-
-`Screen::run()` applies the native display-brightness table after `below()` and `above()` return.
-
-
-
-EXP-004 should therefore distinguish:
-
-
-
-```text
-
-pre-brightness native result
-
-```
-
-
-
-from:
-
-
-
-```text
-
-sample actually written to the native PPU framebuffer
-
-```
-
-
-
-This gives the future renderer both semantic arithmetic information and an exact native reference sample.
-
-
-
-\---
-
-
-
-\## 5. Critical hires / pseudo-hires complication
-
-
-
-The ordinary low-resolution path is not the entire problem.
-
-
-
-In hires or pseudo-hires operation, `below()` can use screen-math state that existed before the current `above()` call.
-
-
-
-Therefore the left/native-below sample can have a temporal dependency on the preceding main-screen math state.
-
-
-
-Conceptually:
-
-
-
-```text
-
-previous main/math state ─────┐
-
-&#x20;                             │
-
-current sub selection ────────┤
-
-&#x20;                             ↓
-
-&#x20;                      hires left sample
-
-
-
-current main selection ───────┐
-
-current sub selection ────────┤
-
-&#x20;                             ↓
-
-&#x20;                      current right sample
-
-```
-
-
-
-This means a record containing only the current main and current sub winner is potentially insufficient to explain every hires sample.
-
-
-
-EXP-004 must either:
-
-
-
-1\. preserve the required previous-pixel provenance explicitly; or
-
-2\. mark that provenance unknown where it cannot be established safely.
-
-
-
-It must never silently attach the current main winner to a sample that actually depends on previous-pixel state.
-
-
-
-The native source also notes uncertainty about exact first-hires-pixel scanline initialization.
-
-
-
-EXP-004 must preserve that limitation rather than claim hardware verification that does not exist.
-
-
-
-\---
-
-
-
-\## 6. Hypothesis
-
-
-
-\*\*HYPOTHESIS:\*\*
-
-
-
-The bsnes cycle PPU contains observation points where GTC-HD can preserve the native color-math operands, controls, effective operation, pre-brightness result, and native framebuffer samples while retaining main/sub source provenance and without changing native execution.
-
-
-
-If supported, EXP-004 would extend the semantic chain to:
-
-
-
-```text
-
-BG / OBJ provenance
-
-&#x20;       ↓
-
-main/sub composition
-
-&#x20;       ↓
-
-native math operands
-
-&#x20;       ↓
-
-color-window / eligibility
-
-&#x20;       ↓
-
-fixed color or sub source
-
-&#x20;       ↓
-
-add / subtract / halve
-
-&#x20;       ↓
-
-brightness
-
-&#x20;       ↓
-
-native PPU sample
-
-```
-
-
-
-This would still be experimental evidence, not an accepted production interface.
-
-
-
-\---
-
-
-
-\## 7. Primary research questions
-
-
+## 7. Primary research questions
 
 EXP-004 must answer:
 
+1. Can current main/sub and carried-main source identities remain linked to actual contributing operands?
+2. Can the observer preserve eligibility, color-window gates, clipping, fallback, operation and half state as actually consumed, including their different ages?
+3. Can it capture actual native BGR555 results and RGB555 store values without rerunning math, memory operations or brightness lookup?
+4. Can both emitted sample descriptions preserve the correct path, destination and validity?
+5. Can seeds, discontinuities and incomplete lineage remain explicit without discarding known numeric evidence?
+6. Can deterministic comparison support passivity for the captured paths?
+7. What limits remain for hires, hardware initialization and store-to-callback association?
 
+## 8. Required diagnostic representation and EXP-003 reuse
 
-1\. Can the current main winner remain linked to its provenance through color math?
+### 8.1 Preferred unit and shared context
 
+Prefer **one diagnostic record per native composition position with two native sample-result descriptions**. Any alternative must have a documented semantic reason and preserve the pair's ordering and dependencies.
 
+The shared record must carry:
 
-2\. Can the current sub winner remain linked to its provenance when the sub screen actually participates as an operand?
+- diagnostic epoch and attempted composition sequence, independent of retained-array index;
+- callback/composition-interval identity, capture-relative frame, x, PPU H/V and field;
+- BG mode, explicit pseudo-hires and effective hires state;
+- live blank/overscan controls, latched placement/interlace controls and skip reason;
+- owned current main/sub winners and selected pre-math BGR555 colors;
+- current selected-main eligibility and current color-window outputs;
+- copied carried native state, its producer identity/origin and validity;
+- an owned carried-main winner/provenance snapshot where known, plus relevant carried-control and fallback origins.
 
+This is an **experimental diagnostic representation**, not an accepted production semantic-frame format. Do not optimize away required distinctions or indiscriminately record all PPU state.
 
+### 8.2 Two sample-result descriptions
 
-3\. Can fixed color be represented explicitly when it replaces the sub-screen operand?
+Each sample must describe, where applicable:
 
+| Required information | Meaning |
+|---|---|
+| Emission path and reason | Above, below, duplicated above, skipped zero or another source-established case |
+| Primary source/reference | Current main, current sub or explicit non-source case |
+| Raw source color | Selected BGR555 value before clipping |
+| Clipping | Permission consumed, whether clipped, and effective primary operand |
+| Second operand | `None`, `CurrentSub`, `FixedColor` or `CarriedMain`; reference, actual value and fallback reason |
+| Math operation | Actual no-math/add/subtract branch and effective half state |
+| Native result | Actual pre-brightness BGR555 return |
+| Brightness | Level consumed and native light-table processing boundary |
+| Store value | Actual native RGB555 value supplied to the store |
+| Logical destination | Integer sample/row offsets for the native A/B writes, with aliasing or duplication identified |
+| Destination validity | Inside/outside the declared callback buffer, or not established; distinguish later callback association |
+| Semantic validity | Source/control history known or UNKNOWN, seed status and hardware uncertainty separately |
 
+Copied history should remain interpretable if its producer record was not retained. Optional links must not be the sole evidence for a missing predecessor. Retained records must contain no live mutable native pointers.
 
-4\. Can the observer distinguish:
+### 8.3 Reuse EXP-003
 
-&#x20;  - color math disabled;
+Reuse EXP-003's BG provenance, OBJ provenance, current main/sub winners, selected pre-math colors, effective current color-window values, and callback-window/runtime infrastructure wherever semantically valid. Do not duplicate BG/OBJ provenance tracking or reconstruct winners from colors.
 
-&#x20;  - main color clipped;
+**SOURCE OBSERVATION:** EXP-003 resolves winners while its current record is private and pending; it appends only after `screen.run()`. A narrow copied-value/pending handoff is permitted where that lifecycle is insufficient. Using the last retained record as the current winner is not valid.
 
-&#x20;  - sub-screen operand;
+Preserve the distinction between EXP-003's current pre-window main eligibility/current windows and EXP-004's effective or carried decisions. Coordinate observer activation, clear, reset and export so a second controller cannot invalidate shared lineage mid-capture.
 
-&#x20;  - fixed-color operand;
+## 9. Native sample emission and callback association
 
-&#x20;  - add;
+**SOURCE OBSERVATION:** For composition positions where `Screen::run()` writes, ordinary low-resolution output supplies the above result to both horizontal sample slots. Hires/pseudo-hires supplies below first and above second. A/B destinations add native vertical duplication or interlace aliasing; they are not separate color calculations. V=0 returns without writes.
 
-&#x20;  - subtract;
+A low-resolution below return is not an emitted zero sample. Skipped selection can still produce native zero stores; preserve that distinction and P0's destination findings.
 
-&#x20;  - halved result;
+Describe the capture as a **native callback interval / composition interval**, not necessarily one simple 256×240 visual frame. The audited existing interval can include skipped tail positions from the previous capture-relative frame and visible positions from the next. Capture-relative frame, callback index and output destination must remain separate.
 
-&#x20;  - unhalved result?
+This precision does not invalidate EXP-003's tested composition result. It prevents using a record count alone as proof of complete one-to-one sample ownership in the callback buffer.
 
+**SOURCE OBSERVATION:** PPU refresh can modify the buffer through blur or controller overlays before callback hashing. Claimed store-to-callback equivalence requires valid destinations and control of those later modifications. Invalid destinations must be explicit, not silently mapped into valid pixels.
 
+## 10. Passivity constraints
 
-5\. Can the exact native pre-brightness result be captured without rerunning native math?
+The native cycle PPU remains authoritative. EXP-004 must not:
 
+- repeat `paletteColor()`, skip a native lookup, or change lookup order;
+- repeat stateful PPU memory operations or reread VRAM/OAM/CGRAM to reconstruct operands or lineage;
+- rerun `Window::run()` or duplicate window tests as runtime truth;
+- rerun winner selection or invoke below/above a second time;
+- replace native `blend()` arithmetic or make observer recomputation authoritative;
+- add timing steps, synchronization or emulation execution inside hooks;
+- change the native serializer payload or normalize native Math state;
+- alter lookup/store ordering, pointer increments, A/B aliasing or native memory layout for instrumentation;
+- add framebuffer readback in hooks merely to reconstruct values;
+- introduce per-pixel file I/O or live mutable pointers in retained diagnostics;
+- silently repair the output-bounds concern.
 
+`paletteColor()` changes the CGRAM address latch, which participates in execution-visible behavior. Pure helpers such as the audited `directColor()` are not established mutation hazards, but their results should still be captured from native execution rather than redundantly derived.
 
-6\. Can the exact brightness-adjusted PPU sample be captured without changing framebuffer output?
+Prefer already calculated operands, branch decisions, typed return values and values supplied to stores. Capture first lookup/store before second lookup/store exactly as native execution does.
 
+## 11. Observer lifecycle and unknown-provenance rules
 
+The observer must be disabled by default, use bounded owned storage, retain explicit dropped-record and overflow status, and export only after emulation execution has returned. Reset, power, load, rewind and other discontinuities must invalidate diagnostic history; they must not change native state or add diagnostic data to native save payloads. Save/Size operations must not invalidate diagnostics merely because serialization is inspected.
 
-7\. Can hires/pseudo-hires temporal dependencies be represented without falsely attributing current-pixel provenance?
+Use separate validity for numeric evidence, source lineage and control origin:
 
-
-
-8\. Can all of this remain passive under deterministic native-framebuffer comparison?
-
-
-
-\---
-
-
-
-\## 8. Required semantic information
-
-
-
-The exact implementation and record layout are left to repository-aware investigation, but EXP-004 should preserve enough information to answer the research question.
-
-
-
-Useful record information is expected to include:
-
-
-
-\### Position and rendering context
-
-
-
-\- capture-relative frame;
-
-\- X/Y;
-
-\- PPU H/V counter;
-
-\- field;
-
-\- BG mode;
-
-\- hires/pseudo-hires state;
-
-\- display brightness;
-
-\- forced blank / skipped state where relevant.
-
-
-
-\### Current source provenance
-
-
-
-\- current main source category;
-
-\- current main provenance where known;
-
-\- current sub source category;
-
-\- current sub provenance where known;
-
-\- current main pre-math color;
-
-\- current sub pre-math color.
-
-
-
-The experiment should reuse or extend the proven EXP-003 provenance mechanism rather than reconstruct these sources from final colors.
-
-
-
-\### Native eligibility and window state
-
-
-
-\- selected-source color-math eligibility;
-
-\- relevant color-window outputs;
-
-\- effective math-enable state;
-
-\- whether the primary operand was passed or clipped to zero.
-
-
-
-\### Second operand
-
-
-
-The record must distinguish at least:
-
-
+| Situation | Required treatment |
+|---|---|
+| Activation without observed predecessor or seed | UNKNOWN carried provenance/control origin; copied numeric Math values may still be known |
+| Reset/power/load/rewind discontinuity | Invalidate/disarm diagnostic history and establish a new epoch; restored native Math does not restore lineage |
+| Missing producer provenance or incomplete source lineage | Preserve known source category/color; required lineage remains UNKNOWN |
+| Unsupported Mode 7 lineage | Do not fabricate tiled-BG lineage; retain observed color/source category separately |
+| Missing carried-control origin or invalid/missing predecessor history | UNKNOWN for the missing dependency; do not infer from current registers, color equality or record adjacency |
+| Observed native scanline initialization | `NativeScanlineSeed` with exact observed values; no invented previous winner |
+| Hardware seed behavior | UNCONFIRMED independently of whether native seed values are known |
+| No second operand or unused control | `None` / `NotApplicable`, not UNKNOWN |
+| Primary clipped by native decision | Known clipped zero, with underlying source validity separately retained |
+| Continuous observed mode transition | Preserve actual native producer history; invalidate only unsupported or missing dependencies |
+| Skipped path | Explicit skip/zero result; preserve history where native Math persists |
+| Overflow or absent retained link | Use owned known history if available; otherwise UNKNOWN; capture remains incomplete |
+| Invalid destination or unestablished callback association | Preserve observed store value and report destination/association limitation explicitly |
+
+Do not discard a known numeric native result merely because its semantic lineage is unknown. Seed markers and hardware uncertainty must not be erased to make a success flag pass. Distinguish export completion, coverage, lineage completeness and hardware confirmation.
+
+## 12. Experimental checkout and staged progression
+
+Registered experimental worktree:
 
 ```text
-
-none
-
-sub-screen source
-
-fixed color
-
+C:\Users\User\Documents\GTC-HD-Lab\experiments\bsnes-exp-004
 ```
 
+Branch: `gtc-hd/exp-004-color-math-provenance`
 
+Frozen baseline: `76bdb9250befa62fcbf23fcff2ef962fe2f58215`
 
-and preserve the actual operand color.
+This is an experimental checkout, not production GTC-HD source. Registration does not bypass the implementation gate or authorize source changes during a documentation task.
 
+The required progression is:
 
+1. **P0:** Investigate native output destination bounds and document the disposition.
+2. **After explicit implementation authorization:** Define owned records/history and the narrow EXP-003 handoff.
+3. Add passive hooks at native seed, selection, effective-decision, arithmetic-result and store-value boundaries; implement lifecycle handling.
+4. Extend the existing callback-window infrastructure and focused native-method tests.
+5. Complete the supported UCRT64 desktop build and deterministic runtime comparison.
+6. Write curated results, with separate conclusions for the paths actually supported.
 
-If configured sub-screen blending falls back to fixed color because of native transparent-sub behavior, that reason should remain distinguishable.
+Do not modify upstream or other experiment worktrees. A baseline repair, if necessary, is a separate task rather than an instrumentation stage.
 
+## 13. Focused host-test requirements
 
+These are planned tests, not completed evidence. Use actual native methods where practical and retain the scope of synthetic surrounding state. Native math remains the runtime authority; independent calculations are test oracles only.
 
-\### Arithmetic operation
+| Stage / test family | Required coverage |
+|---|---|
+| **Stage/Test 0 — P0 bounds** | Frozen logical destinations, relevant V/overscan/interlace/field boundaries, skipped stores, A/B aliasing, pointer construction and overscan clear; declared-buffer validity and passive observation strategy |
+| No math / clipping | Enabled/disabled source eligibility, allowed/clipped primary, no second operand, explicit skip reason, V=0 no write |
+| Fixed-color arithmetic | Add, subtract, half add/subtract; zero/max channels, odd values, saturation and borrow boundaries; actual native operands and returned result captured |
+| Sub-screen arithmetic | Add/subtract and halves; distinct main/sub provenance and actual operand values |
+| Transparent-sub fallback | Priority-zero backdrop versus black nontransparent source; actual fixed fallback and half suppression; no false fallback claim when math is gated off |
+| Source eligibility | BG1–BG4, backdrop, OBJ enable and palette restriction; final winner eligibility rather than losing-candidate eligibility |
+| Color windows | Native primary permission, clipping, math allow/suppress, combinations with layer suppression; window boundaries, inversion and combination modes |
+| Brightness / encoding | Actual native light table at 0, max and intermediate brightness; rounding and asymmetric channels; BGR555 → RGB555 conversion; no identity-table shortcut |
+| Actual output | Both horizontal sample slots; valid A/B destinations, interlace aliasing/non-interlace duplication, logical destination validity, exact lookup/store order |
+| True hires / pseudo-hires | Modes 5/6 and pseudo-hires; current sub primary, carried-main or fixed secondary, current above result and lowres duplicate distinction |
+| Temporal producer history | Raw carried main rather than previous blended sample; previous active producer not equal to previous record; skipped positions, stale-but-unused controls and lowres-to-hires transition |
+| Mixed-age controls | Register/control changes between native composition positions: current direction/fixed color versus carried enable/permission/choice/half; current above decisions; no artificial steps within native run |
+| Scanline seed / missing history | Actual seed values and first native hires result, `NativeScanlineSeed`, hardware UNCONFIRMED, activation without seed/predecessor yielding UNKNOWN semantic origin |
+| Lifecycle | Reset/power/load/rewind invalidation, clear/disarm/rearm, incomplete/Mode 7 lineage, missing control origin and copied ownership |
+| Passivity | Frozen baseline versus new disabled/enabled native output and logical-state signatures; CGRAM latch, relevant memory-port effects, timing/read counts and Math state |
+| Serialization | Native Size/Save layout/payload stability, actual load invalidation; no diagnostic payload; no uncontrolled cross-build coroutine-stack or RNG bytes treated as an equality oracle |
+| Bounded capture / controller | Exact capacity, overflow/drops, history continuity independent of retention, callback boundaries, disarm/export timing, malformed options, collision/error/partial-run handling |
+| Regressions / complete provenance chain | Reuse EXP-003 BG/OBJ/composition/window/hash/controller coverage; actual source fetch → winner → operand → result → valid native sample assertions |
 
+Test arithmetic branch boundaries explicitly: native half-add must not be validated using an oracle that saturates the sum before halving. Test OBJ's literal palette threshold and valid nontransparent producer palettes.
 
+Use actual native light-table construction or its extracted native initialization body. The EXP-003 fixture's identity table supports neither brightness nor output-encoding claims.
 
-The observer should identify the effective native operation:
+## 14. Runtime validation plan
 
+After P0 and authorized implementation/build/host validation, use the established deterministic Super Mario World environment first.
 
+| Run | Required configuration |
+|---|---|
+| A — retained reference | Preserved EXP-003 1,800-callback sequence, where the baseline and configuration remain valid |
+| B — EXP-004 disabled | EXP-004 binary, observer disabled, 1,800 framebuffer callbacks |
+| C — EXP-004 enabled | **Exact same executable as B**, observer enabled for the initial semantic window at **callback 500**, 1,800 framebuffer callbacks |
+
+Restore identical deterministic ROM, settings, SRAM and input conditions before each comparative process. Record their identities/hashes, the actual build/compiler and executable hash. If a separately authorized baseline repair invalidates A, reconsider/regenerate the reference before comparison.
+
+Reuse zero-based callback-window semantics: arm before the ordinary run that produces callback 500, then disarm/export only after that run returns with completed-callback count 501. Require the expected one-callback-per-run sequence. No observer control/export occurs inside the framebuffer callback.
+
+Use the cycle PPU and controlled cold-start conditions, with no run-ahead, rewind, fast-forward or interactive reset/load/input changes. Disable blur and controller overlays for direct store-to-callback comparisons. Keep callback interval, capture-relative frame and logical destination identities distinct.
+
+Compare all ordered callback hashes and metadata, completion footers and process status:
 
 ```text
-
-no color math / passthrough
-
-add
-
-subtract
-
-add + halve
-
-subtract + halve
-
+A == B == C     where retained A remains valid
+B == C         mandatory
 ```
 
+Matching framebuffer sequences supports passivity only for the tested output conditions; it does not establish universal CPU-visible state equivalence or hardware truth.
 
+## 15. Runtime capture must contain meaningful color-math evidence
 
-If additional semantic cases are required by the real native implementation, they should be represented explicitly rather than forced into an inaccurate category.
+Keep callback 500 as the initial semantic observation window. Do not choose another callback in advance merely because its arithmetic coverage is UNKNOWN.
 
+After capture, inspect actual operations, operands, clipping, brightness, source validity and hires history. A claimed color-math result requires actual arithmetic and at least one traceable contributing-source-to-native-result example. Useful coverage includes fixed, current-sub and carried-main operands, fallback, addition, subtraction, halving, clipping and brightness conversion.
 
+Not every category must occur in one interval. If callback 500 lacks useful math evidence, record:
 
-\### Result
+**VALID CAPTURE, INSUFFICIENT COVERAGE**
 
+Then select another deterministic window. If the 1,800-callback no-input sequence is inadequate, use planned deterministic gameplay-state infrastructure rather than manual nondeterministic input.
 
+## 16. Evidence summary requirements
 
-Preserve:
+Summaries must establish coverage and limits rather than maximize telemetry volume. Report:
 
+- attempted and retained composition pairs, drops, overflow and bounded allocation size;
+- emitted sample slots separately from unique arithmetic evaluations and duplicated above results;
+- skip, no-math, clipped, fixed/current-sub/carried-main and effective fallback counts;
+- addition, subtraction, effective halving and brightness distribution;
+- true-hires/pseudo-hires coverage;
+- current-source and carried-source validity, carried-control origin validity, seeds and unknown reasons;
+- valid/invalid logical destinations and limits on callback association;
+- callback interval, export completion and semantic completeness separately.
 
+Expected seeds and hardware initialization uncertainty are not fabricated missing sources. A technically complete export with inadequate arithmetic coverage is not experimental verification.
 
-\- native result before brightness;
+## 17. Verification criteria
 
-\- display-brightness level;
+EXP-004 may eventually be marked **VERIFIED FOR TESTED CONDITIONS** only for explicitly scoped paths supported by implementation, focused tests and runtime evidence.
 
-\- actual native PPU framebuffer sample after brightness.
+Required evidence includes:
 
+1. P0 completed with a documented disposition, destination constraints and any baseline/reference implications.
+2. Focused native-method tests passed, including actual light-table behavior and the claimed temporal paths.
+3. Supported UCRT64 desktop build succeeded with exact source/build/executable identity retained.
+4. Disabled execution matched the valid deterministic reference, and B/C ordered native framebuffer sequences matched over all 1,800 callbacks.
+5. Targeted real-ROM capture completed with no dropped records or overflow in the claimed interval.
+6. Required source and control provenance was known, or an explicitly appropriate native-seed/constant origin was recorded, for the samples used to support each claim.
+7. Actual arithmetic occurred, and at least one arithmetic result remained traceable to its contributing provenance.
+8. Claimed framebuffer associations used established valid destinations and accounted for later refresh modifications.
+9. Results distinguished source inspection, host-test evidence and real-ROM evidence, and retained hardware initialization as UNCONFIRMED absent separate evidence.
 
+No source observation or existing EXP-003 test pass is, by itself, EXP-004 runtime verification. Real-ROM support for low resolution must not be generalized to unexercised hires paths.
 
-\### Hires history
+## 18. Failure and partial-result conditions
 
+| Condition | Required conclusion / response |
+|---|---|
+| B/C framebuffer mismatch | **PASSIVITY FAILURE**; stop architectural interpretation until explained |
+| Native result observed but required source/control origin unavailable | **SEMANTIC-PRESERVATION LIMIT DISCOVERED**; retain numeric evidence and document the missing dependency |
+| Lowres evidence sufficient, hires evidence incomplete | **LOW-RES SUPPORTED FOR TESTED CONDITIONS** and **HIRES INVESTIGATING**, reported separately |
+| Completed capture lacks useful arithmetic | **VALID CAPTURE, INSUFFICIENT COVERAGE**; choose another deterministic window after review |
+| Case only exercised in host tests | **IMPLEMENTED / HOST-TESTED, NOT REAL-ROM EXERCISED**, if and when those stages actually occur |
+| P0 disposition unresolved | Prerequisite pending; no EXP-004 source implementation authorization |
+| Invalid or unestablished output association | Restrict the claim and expose destination validity; never silently repair or remap native behavior |
+| Unknown history or incomplete lineage | Explicit UNKNOWN for the missing semantic part, not inferred provenance or discarded known result |
+| Hardware first-sample behavior unestablished | **UNCONFIRMED**; native-source/host evidence does not settle hardware behavior |
 
+## 19. Non-goals
 
-Where a native sample depends on earlier math state, preserve enough information to identify that dependency.
+EXP-004 does not design a production renderer or semantic-frame format, select an emulator/graphics API/upscaler, implement lighting/HDR/shaders/asset replacement/AI enhancement, infer game-object identity or physical depth, solve Mode 7 lineage or widescreen, optimize record size prematurely, or establish universal compatibility.
 
+It does not silently repair the native baseline or claim hardware truth from implementation comments.
 
+Its scope remains preservation and validation of the semantic path from EXP-003 sources and relevant carried state through native color processing to native sample values and established output destinations.
 
-Possible representations include:
+## 20. Expected architectural value
 
-
-
-\- previous record linkage;
-
-\- copied previous-main source/provenance;
-
-\- an explicit diagnostic history token;
-
-\- an explicit unknown/scanline-seed state.
-
-
-
-The implementation should choose the smallest representation that is correct.
-
-
-
-\---
-
-
-
-\## 9. Two native output samples must not be conflated
-
-
-
-`Screen::run()` writes two native samples per composition position.
-
-
-
-In ordinary low-resolution output, both normally represent the current above result after brightness.
-
-
-
-In hires/pseudo-hires output, the first sample can represent the below/temporal path while the second represents the current above path.
-
-
-
-EXP-004 should therefore preserve the relationship between the composition position and both emitted native samples.
-
-
-
-A suggested conceptual representation is:
-
-
+If supported, the experiment would extend the tested provenance chain:
 
 ```text
-
-composition position
-
-&#x20;  │
-
-&#x20;  ├── sample A provenance/result
-
-&#x20;  │
-
-&#x20;  └── sample B provenance/result
-
+BG / OBJ provenance
+→ main/sub composition provenance
+→ current and carried native operands / effective controls
+→ native arithmetic result
+→ brightness and encoding conversion
+→ native sample value / validated destination
 ```
 
+A future renderer could receive an explanation of which original source contributed, what native operation occurred, which controls were current or carried, and the exact native reference sample. It could then evaluate enhancements against native semantics rather than guessing backward from a flattened image.
 
+This is expected research value, not a claim that an enhancement renderer or production interface exists.
 
-The exact record schema is an implementation question.
+## 21. Architectural status
 
+Even a successful EXP-004 result does not automatically accept architecture:
 
+| Topic | Status |
+|---|---|
+| Semantic-preservation architecture | **HYPOTHESIS** |
+| bsnes foundation | **INVESTIGATING** |
+| Production renderer interface | **UNDECIDED** |
+| Semantic-frame format | **UNDECIDED** |
+| Graphics API | **UNDECIDED** |
+| Game-profile format | **UNDECIDED** |
 
-The semantic distinction is required.
+Experimental evidence and accepted GTC-HD decisions remain separate.
 
+## 22. Results-document expectation
 
-
-\---
-
-
-
-\## 10. Passivity constraints
-
-
-
-The native cycle PPU must remain authoritative.
-
-
-
-EXP-004 must not:
-
-
-
-\- replace native color math;
-
-\- skip native palette lookup;
-
-\- perform additional stateful palette lookup;
-
-\- rerun native winner selection;
-
-\- rerun color-window tests for runtime truth;
-
-\- reread VRAM, OAM, or CGRAM to reconstruct operands;
-
-\- change native timing steps;
-
-\- change framebuffer write order;
-
-\- change native serializer payload;
-
-\- introduce file I/O inside PPU rendering hooks;
-
-\- retain live pointers to mutable native PPU state.
-
-
-
-In particular, `paletteColor()` is not a harmless query: it updates the native CGRAM address latch.
-
-
-
-The observer must capture values produced by the authoritative execution rather than invoke stateful helpers a second time.
-
-
-
-Where practical, the observer should capture the actual native returned/result values rather than recomputing them.
-
-
-
-\---
-
-
-
-\## 11. Observer lifecycle
-
-
-
-As with the earlier experiments:
-
-
-
-\- observer disabled by default;
-
-\- bounded memory;
-
-\- no per-pixel file I/O;
-
-\- explicit dropped-record counter;
-
-\- explicit overflow state;
-
-\- copied/owned record data;
-
-\- export only after emulation execution has returned;
-
-\- reset/power/load invalidate diagnostic history;
-
-\- discontinuities must not silently retain stale provenance.
-
-
-
-Hires history makes discontinuity handling especially important.
-
-
-
-If required predecessor provenance is unavailable following:
-
-
-
-\- observer activation;
-
-\- reset;
-
-\- state load;
-
-\- rewind;
-
-\- other discontinuity;
-
-
-
-the result must be marked unknown rather than inferred.
-
-
-
-\---
-
-
-
-\## 12. Experimental branch strategy
-
-
-
-EXP-004 should branch from the frozen EXP-003 implementation:
-
-
-
-```text
-
-76bdb9250
-
-```
-
-
-
-Proposed worktree:
-
-
-
-```text
-
-experiments/bsnes-exp-004
-
-```
-
-
-
-Proposed branch:
-
-
-
-```text
-
-gtc-hd/exp-004-color-math-provenance
-
-```
-
-
-
-Reason:
-
-
-
-EXP-004 begins at the semantic boundary EXP-003 already established.
-
-
-
-Reimplementing BG, OBJ, and composition provenance independently would add duplicate code and another possible source of disagreement without answering a new research question.
-
-
-
-This is an experimental dependency only.
-
-
-
-It does not establish the eventual production architecture.
-
-
-
-\---
-
-
-
-\## 13. Focused host-test requirements
-
-
-
-Before any real-ROM conclusion, focused tests should exercise the real native screen/color-math methods.
-
-
-
-At minimum:
-
-
-
-\### No-math path
-
-
-
-\- eligible main source;
-
-\- color math disabled;
-
-\- unclipped main passes through;
-
-\- clipped main becomes the native expected value.
-
-
-
-\### Fixed-color arithmetic
-
-
-
-\- add fixed color;
-
-\- subtract fixed color;
-
-\- add + halve;
-
-\- subtract + halve;
-
-\- saturation/borrow boundaries;
-
-\- zero and maximum component cases.
-
-
-
-\### Sub-screen arithmetic
-
-
-
-\- main + sub;
-
-\- main - sub;
-
-\- halved variants;
-
-\- distinct main/sub provenance retained.
-
-
-
-\### Transparent sub behavior
-
-
-
-Test the native case where sub-screen blending is requested but the selected sub path is transparent/backdrop in the condition that changes effective blend behavior.
-
-
-
-The record must report what the native path actually did.
-
-
-
-\### Source eligibility
-
-
-
-Exercise color-math eligibility for:
-
-
-
-\- BG;
-
-\- OBJ;
-
-\- backdrop.
-
-
-
-Exercise the native OBJ palette restriction.
-
-
-
-\### Color window
-
-
-
-Exercise:
-
-
-
-\- main color allowed;
-
-\- main color clipped;
-
-\- math allowed;
-
-\- math suppressed;
-
-\- combinations where clipping and arithmetic interact.
-
-
-
-\### Brightness
-
-
-
-At minimum test:
-
-
-
-\- brightness 0;
-
-\- maximum brightness;
-
-\- one intermediate value.
-
-
-
-Verify captured native framebuffer samples match actual native writes.
-
-
-
-\### Mid-stream control changes
-
-
-
-Change relevant native registers between rendered samples and verify records use the controls active at the actual composition/math point rather than a frame-level snapshot.
-
-
-
-\### Hires / pseudo-hires
-
-
-
-Exercise:
-
-
-
-\- low-resolution baseline;
-
-\- true hires mode;
-
-\- pseudo-hires;
-
-\- previous-pixel dependency;
-
-\- scanline start;
-
-\- explicit unknown history where predecessor provenance is unavailable.
-
-
-
-\### Passivity
-
-
-
-Compare baseline and instrumented native state/output signatures.
-
-
-
-Include the CPU-visible CGRAM latch where applicable.
-
-
-
-\### Serialization
-
-
-
-Verify native serializer layout/payload remains unchanged.
-
-
-
-Diagnostic state must not become part of native save-state semantics.
-
-
-
-\---
-
-
-
-\## 14. Runtime validation plan
-
-
-
-Use the established deterministic Super Mario World environment first.
-
-
-
-The initial runtime comparison should use:
-
-
-
-```text
-
-1,800 native callbacks
-
-```
-
-
-
-with a narrow semantic observation window.
-
-
-
-\### A — existing reference
-
-
-
-Use the preserved EXP-003 1,800-callback framebuffer sequence as an existing deterministic reference where available.
-
-
-
-\### B — EXP-004 binary, observer disabled
-
-
-
-Run the completed EXP-004 binary for 1,800 callbacks with restored deterministic:
-
-
-
-\- ROM;
-
-\- SRAM;
-
-\- settings;
-
-\- input state.
-
-
-
-EXP-004 observation disabled.
-
-
-
-B should match the existing deterministic reference.
-
-
-
-\### C — exact same EXP-004 binary, observer enabled
-
-
-
-Restore the same deterministic seeds.
-
-
-
-Run the exact same executable for 1,800 callbacks.
-
-
-
-Enable EXP-004 semantic capture for one targeted callback, initially:
-
-
-
-```text
-
-callback 500
-
-```
-
-
-
-Compare all ordered native framebuffer callback hashes:
-
-
-
-```text
-
-A == B == C
-
-```
-
-
-
-where the A reference is available.
-
-
-
-At minimum:
-
-
-
-```text
-
-B == C
-
-```
-
-
-
-is required.
-
-
-
-\---
-
-
-
-\## 15. Runtime capture must contain meaningful color-math evidence
-
-
-
-A technically complete capture that contains no actual color-math activity is not enough to answer EXP-004.
-
-
-
-The selected real-ROM capture should ideally contain at least one actual arithmetic case.
-
-
-
-Useful evidence includes:
-
-
-
-\- fixed-color use;
-
-\- sub-screen use;
-
-\- addition;
-
-\- subtraction;
-
-\- halving;
-
-\- clipping;
-
-\- brightness other than a trivial identity case;
-
-\- source provenance retained through an actual arithmetic result.
-
-
-
-Not all categories need to occur in one callback.
-
-
-
-If callback 500 is composition-rich but color-math-poor, choose another deterministic callback.
-
-
-
-That is not experiment failure.
-
-
-
-If the 1,800-callback no-input title sequence does not provide useful coverage, that is the trigger to use the planned deterministic gameplay-state infrastructure rather than introducing manual nondeterministic input into B/C comparison runs.
-
-
-
-\---
-
-
-
-\## 16. Runtime evidence summary
-
-
-
-The experiment summary should emphasize semantic coverage rather than raw data volume.
-
-
-
-Useful aggregate counts may include:
-
-
-
-\- records retained;
-
-\- unknown provenance;
-
-\- dropped records;
-
-\- overflow;
-
-\- passthrough samples;
-
-\- clipped samples;
-
-\- fixed-color math;
-
-\- sub-screen math;
-
-\- additions;
-
-\- subtractions;
-
-\- halved operations;
-
-\- brightness levels encountered;
-
-\- hires samples;
-
-\- temporal-history-known samples;
-
-\- temporal-history-unknown samples.
-
-
-
-These counts exist to establish what behavior the test actually exercised.
-
-
-
-They are not the product result.
-
-
-
-\---
-
-
-
-\## 17. Verification criteria
-
-
-
-EXP-004 can be marked:
-
-
-
-\*\*VERIFIED FOR TESTED CONDITIONS\*\*
-
-
-
-only if the relevant tested claims are supported by both implementation evidence and runtime evidence.
-
-
-
-Minimum requirements:
-
-
-
-1\. Focused native-method tests pass.
-
-
-
-2\. Supported UCRT64 desktop build succeeds.
-
-
-
-3\. EXP-004 observer disabled is deterministic against the established reference.
-
-
-
-4\. Observer-enabled and observer-disabled native framebuffer sequences are identical for the complete comparative run.
-
-
-
-5\. Targeted real-ROM capture completes successfully.
-
-
-
-6\. No dropped records or overflow occur in the claimed capture.
-
-
-
-7\. Required provenance is known for the specific real-ROM samples used to support the claim.
-
-
-
-8\. The capture contains actual native color-math activity rather than only no-op/pass-through cases.
-
-
-
-9\. At least one arithmetic result remains traceable to its contributing source provenance.
-
-
-
-10\. Results distinguish what was real-ROM verified from what was only host-tested.
-
-
-
-\---
-
-
-
-\## 18. Failure / partial-result conditions
-
-
-
-The experiment must not be called fully verified merely because the program runs.
-
-
-
-Important partial outcomes include:
-
-
-
-\### Framebuffer mismatch
-
-
-
-If B and C differ:
-
-
-
-\*\*PASSIVITY FAILURE\*\*
-
-
-
-Stop architectural interpretation until explained.
-
-
-
-\### Provenance lost before math
-
-
-
-If the native result can be observed but operand source identity cannot be preserved safely:
-
-
-
-\*\*SEMANTIC-PRESERVATION LIMIT DISCOVERED\*\*
-
-
-
-Document the boundary.
-
-
-
-\### Hires history unresolved
-
-
-
-If ordinary low-resolution provenance works but hires temporal provenance cannot yet be represented safely:
-
-
-
-\*\*LOW-RES RESULT SUPPORTED; HIRES REMAINS INVESTIGATING\*\*
-
-
-
-Do not hide the distinction.
-
-
-
-\### Uninteresting real-ROM capture
-
-
-
-If the chosen callback contains no useful arithmetic:
-
-
-
-\*\*VALID CAPTURE, INSUFFICIENT COVERAGE\*\*
-
-
-
-Choose a better deterministic test window.
-
-
-
-\### Window/math case only host-tested
-
-
-
-Record it as:
-
-
-
-\*\*IMPLEMENTED / HOST-TESTED, NOT REAL-ROM EXERCISED\*\*
-
-
-
-rather than generalizing.
-
-
-
-\---
-
-
-
-\## 19. Non-goals
-
-
-
-EXP-004 does not attempt to:
-
-
-
-\- design the production GTC-HD renderer;
-
-\- select a graphics API;
-
-\- implement lighting;
-
-\- implement HDR;
-
-\- implement shaders;
-
-\- implement asset replacement;
-
-\- infer physical depth;
-
-\- infer game-object identity;
-
-\- solve Mode 7 provenance;
-
-\- solve widescreen;
-
-\- implement AI enhancement;
-
-\- select an upscaler;
-
-\- optimize observer performance prematurely;
-
-\- establish universal SNES compatibility;
-
-\- establish hardware truth beyond what the tested bsnes path and evidence support.
-
-
-
-The purpose is narrow:
-
-
-
-> Preserve and validate the semantic path from EXP-003 main/sub winners through native color math to the native PPU output sample.
-
-
-
-\---
-
-
-
-\## 20. Expected architectural value
-
-
-
-If supported, EXP-004 would materially strengthen the semantic-preservation hypothesis.
-
-
-
-The experimental chain would become:
-
-
-
-```text
-
-EXP-001
-
-BG provenance
-
-&#x20;       ↓
-
-EXP-002
-
-OBJ provenance
-
-&#x20;       ↓
-
-EXP-003
-
-main/sub composition provenance
-
-&#x20;       ↓
-
-EXP-004
-
-color-math and native-sample provenance
-
-```
-
-
-
-At that point, GTC-HD may have evidence that a future renderer can receive a representation closer to:
-
-
-
-> This native output sample was produced from this original BG/OBJ source, optionally combined with this sub source or fixed color, under these native color-math conditions, and resulted in this exact native sample.
-
-
-
-That is substantially more useful than a flattened framebuffer pixel.
-
-
-
-It could eventually provide a semantic bridge between:
-
-
-
-```text
-
-what the SNES did
-
-```
-
-
-
-and:
-
-
-
-```text
-
-what a modern enhancement renderer is allowed to enhance
-
-```
-
-
-
-without requiring the enhancement renderer to guess backward from final colors.
-
-
-
-\---
-
-
-
-\## 21. Architectural status
-
-
-
-EXP-004 does not itself accept an architecture.
-
-
-
-Even if successful:
-
-
-
-\*\*Semantic-preservation layer:\*\* HYPOTHESIS, potentially further supported
-
-
-
-\*\*bsnes as GTC-HD foundation:\*\* INVESTIGATING
-
-
-
-\*\*Production renderer interface:\*\* UNDECIDED
-
-
-
-\*\*Semantic frame format:\*\* UNDECIDED
-
-
-
-\*\*Graphics API:\*\* UNDECIDED
-
-
-
-\*\*Game-profile format:\*\* UNDECIDED
-
-
-
-Important project decisions remain separate from experimental success.
-
-
-
-\---
-
-
-
-\## 22. Results-document expectation
-
-
-
-`RESULTS.md` should not become a raw instrumentation report.
-
-
+A future `RESULTS.md` must explain what was learned, why it matters, what a renderer gains, what remains unknown and the implications for GTC-HD. It must not become a raw telemetry dump.
 
 It should answer:
 
+1. What native semantic problem and prerequisite were investigated?
+2. What did source inspection establish, and what remained uncertain?
+3. What did focused tests establish, including destination bounds and temporal/encoding behavior?
+4. What did real-ROM execution actually exercise?
+5. Was framebuffer passivity preserved for the claimed conditions?
+6. Which source-to-result relationships survived, and what does that give a future renderer?
+7. Which lineage, hires, destination, hardware or coverage limits remain?
+8. What are the implications for GTC-HD, without accepting architecture?
+9. What should be investigated next?
 
-
-1\. What native semantic problem was investigated?
-
-2\. What did source inspection reveal?
-
-3\. What did focused tests establish?
-
-4\. What did real-ROM execution actually exercise?
-
-5\. Was framebuffer passivity preserved?
-
-6\. Which source-to-result relationships survived?
-
-7\. What limitations remain?
-
-8\. What does the result imply for GTC-HD?
-
-9\. What should be investigated next?
-
-
-
-Raw captures remain local by default.
-
-
-
-Curated evidence and architectural learning belong in the public repository.
-
-
-
-The durable result is not how many records were collected.
-
-
-
-The durable result is what GTC-HD learned about preserving native rendering meaning.
+Raw captures remain local by default. Preserve curated evidence, reproducibility metadata, representative examples and architectural learning in the project documentation. The durable result is what GTC-HD learned about preserving native rendering meaning, not the volume of collected records.
 
