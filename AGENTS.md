@@ -393,4 +393,36 @@ Read the experiment specification before implementation:
 
 `docs/experiments/EXP-002/SPEC.md`
 
+### EXP-003
+
+The worktree:
+
+`experiments/bsnes-exp-003/`
+
+is writable only for:
+
+**EXP-003 — Main/Sub Composition and Winner Provenance**
+
+Expected branch:
+
+`gtc-hd/exp-003-composition-provenance`
+
+Expected baseline:
+
+`906f74b6e5f4f2f4e62bb960d01aa68c9f55f919`
+
+For EXP-003:
+
+- modifications may be made inside `experiments/bsnes-exp-003/`;
+- commits may be made only on its experiment branch when explicitly requested;
+- do not modify `upstream/bsnes/`;
+- do not modify any EXP-001 or EXP-002 worktree;
+- preserve native bsnes cycle-PPU window, priority, main-screen, and sub-screen behavior;
+- experimental provenance code is evidence-gathering code, not accepted GTC-HD architecture;
+- a successful experiment does not select bsnes as the GTC-HD foundation.
+
+Read the experiment specification before implementation:
+
+`docs/experiments/EXP-003/SPEC.md`
+
 
