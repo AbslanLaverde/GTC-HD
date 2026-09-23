@@ -297,4 +297,72 @@ Read the P0 report before investigation:
 
 `docs/experiments/EXP-004/P0_OUTPUT_BOUNDS_REPORT.md`
 
+### bsnes Native Output-Bounds Candidate A
 
+The worktree:
+
+`experiments/bsnes-native-output-bounds-a/`
+
+is writable only for:
+
+**Prototype retained late-sample backing with complete pointer safety while preserving native PPU execution and the 512x480 presentation contract**
+
+Expected branch:
+
+`gtc-hd/native-output-bounds-candidate-a`
+
+Expected baseline:
+
+`7d5aa1e656b9171524d01b1b22917197d8121cb4`
+
+For Candidate A:
+
+- this checkout is an isolated experimental native-baseline candidate, NOT an accepted repair;
+- it is NOT production GTC-HD source;
+- registration does not authorize EXP-004 implementation;
+- modifications are permitted only when explicitly authorized by the task;
+- do not modify `upstream/bsnes/`;
+- do not modify any EXP-001, EXP-002, EXP-003 or EXP-004 worktree;
+- do not modify `experiments/bsnes-native-output-bounds/`;
+- do not merge this candidate into `master`;
+- candidate comparison must preserve native PPU execution unless the approved prototype specification explicitly says otherwise;
+- a successful prototype does not select bsnes or accept a corrected baseline.
+
+Read the candidate review before implementation:
+
+`docs/research/BSNES_NATIVE_OUTPUT_BOUNDS_CANDIDATE_REVIEW.md`
+
+### bsnes Native Output-Bounds Candidate B
+
+The worktree:
+
+`experiments/bsnes-native-output-bounds-b/`
+
+is writable only for:
+
+**Prototype presentation-bounded stores using explicit execution/storage separation while preserving native PPU execution and all valid 512x480 stores**
+
+Expected branch:
+
+`gtc-hd/native-output-bounds-candidate-b`
+
+Expected baseline:
+
+`7d5aa1e656b9171524d01b1b22917197d8121cb4`
+
+For Candidate B:
+
+- this checkout is an isolated experimental native-baseline candidate, NOT an accepted repair;
+- it is NOT production GTC-HD source;
+- registration does not authorize EXP-004 implementation;
+- modifications are permitted only when explicitly authorized by the task;
+- do not modify `upstream/bsnes/`;
+- do not modify any EXP-001, EXP-002, EXP-003 or EXP-004 worktree;
+- do not modify `experiments/bsnes-native-output-bounds/`;
+- do not merge this candidate into `master`;
+- candidate comparison must preserve native PPU execution unless the approved prototype specification explicitly says otherwise;
+- a successful prototype does not select bsnes or accept a corrected baseline.
+
+Read the candidate review before implementation:
+
+`docs/research/BSNES_NATIVE_OUTPUT_BOUNDS_CANDIDATE_REVIEW.md`
