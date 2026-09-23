@@ -366,3 +366,108 @@ For Candidate B:
 Read the candidate review before implementation:
 
 `docs/research/BSNES_NATIVE_OUTPUT_BOUNDS_CANDIDATE_REVIEW.md`
+
+### bsnes Native Output-Bounds Runtime Control
+
+The worktree:
+
+`experiments/bsnes-native-output-bounds-control-runtime/`
+
+is writable only for:
+
+**Pristine-runtime control using the existing framebuffer hash harness**
+
+Expected branch:
+
+`gtc-hd/native-output-bounds-control-runtime`
+
+Native PPU baseline:
+
+`7d5aa1e656b9171524d01b1b22917197d8121cb4`
+
+Runtime harness commit:
+
+`906f74b6e5f4f2f4e62bb960d01aa68c9f55f919`
+
+For the runtime control:
+
+- preserve the pristine native PPU behavior while using the existing framebuffer hash harness;
+- modifications and runtime validation require explicit task authorization;
+- this is an isolated research checkout, NOT production GTC-HD source or an accepted baseline;
+- do not modify upstream, original investigation, prototype or EXP-001/002/003/004 worktrees as part of work in this checkout;
+- do not merge this branch into `master`;
+- registration does not authorize EXP-004 implementation or select bsnes as the project foundation.
+
+Read the prototype comparison before runtime validation:
+
+`docs/research/BSNES_NATIVE_OUTPUT_BOUNDS_PROTOTYPE_COMPARISON.md`
+
+### bsnes Native Output-Bounds Candidate A Runtime
+
+The worktree:
+
+`experiments/bsnes-native-output-bounds-a-runtime/`
+
+is writable only for:
+
+**Runtime comparison of Candidate A's retained late-sample backing using the existing framebuffer hash harness**
+
+Expected branch:
+
+`gtc-hd/native-output-bounds-candidate-a-runtime`
+
+Prototype parent:
+
+`46fa75236fa61d49d8e9424b3b44694b88aa07a9`
+
+Runtime harness commit:
+
+`13e19564bd038e3767a58b9f1f1d29b1d5f4f527`
+
+For Candidate A runtime:
+
+- preserve the registered prototype's native execution and storage policy unless a task explicitly authorizes changes;
+- modifications and runtime validation require explicit task authorization;
+- this is an isolated research checkout, NOT production GTC-HD source or an accepted repair;
+- do not modify upstream, original investigation, prototype or EXP-001/002/003/004 worktrees as part of work in this checkout;
+- do not merge this branch into `master`;
+- registration does not authorize EXP-004 implementation; successful runtime validation does not select bsnes or accept a corrected baseline.
+
+Read the prototype comparison before runtime validation:
+
+`docs/research/BSNES_NATIVE_OUTPUT_BOUNDS_PROTOTYPE_COMPARISON.md`
+
+### bsnes Native Output-Bounds Candidate B Runtime
+
+The worktree:
+
+`experiments/bsnes-native-output-bounds-b-runtime/`
+
+is writable only for:
+
+**Runtime comparison of Candidate B's presentation-bounded stores using the existing framebuffer hash harness**
+
+Expected branch:
+
+`gtc-hd/native-output-bounds-candidate-b-runtime`
+
+Prototype parent:
+
+`31094598c7c03af7f4bba758061346b5aca7143c`
+
+Runtime harness commit:
+
+`71820eaf7777bee0537ed2a9c87e01e916bae3a1`
+
+For Candidate B runtime:
+
+- preserve the registered prototype's native execution and storage policy unless a task explicitly authorizes changes;
+- modifications and runtime validation require explicit task authorization;
+- this is an isolated research checkout, NOT production GTC-HD source or an accepted repair;
+- do not modify upstream, original investigation, prototype or EXP-001/002/003/004 worktrees as part of work in this checkout;
+- do not merge this branch into `master`;
+- registration does not authorize EXP-004 implementation; successful runtime validation does not select bsnes or accept a corrected baseline.
+
+Read the prototype comparison before runtime validation:
+
+`docs/research/BSNES_NATIVE_OUTPUT_BOUNDS_PROTOTYPE_COMPARISON.md`
