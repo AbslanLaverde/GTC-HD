@@ -18,6 +18,19 @@ Date: September 22, 2026.
 
 This document specifies an experiment. The source audit informs its design; source inspection does not verify the EXP-004 preservation or passivity hypothesis. EXP-004 is neither implemented nor verified by this specification revision.
 
+## Public research source
+
+The [public EXP-004 branch](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-004-color-math-provenance) in [AbslanLaverde/bsnes](https://github.com/AbslanLaverde/bsnes) contains the sanitized EXP-003 foundation plus the EXP-004-P0 investigation tests. It **does not contain color-math provenance implementation**.
+
+| Identity | Historical commit | Public research equivalent |
+| --- | --- | --- |
+| Composition baseline C | `76bdb9250befa62fcbf23fcff2ef962fe2f58215` | [f4a45d47797d4af0918768005b481f95e5ef4635](https://github.com/AbslanLaverde/bsnes/commit/f4a45d47797d4af0918768005b481f95e5ef4635) |
+| P0 test tip P | `94e12628b6dc9580e61fc3322be4a011328b0fe5` | [52cd72078fdc06a51ddeaa51efe943550dec795e](https://github.com/AbslanLaverde/bsnes/commit/52cd72078fdc06a51ddeaa51efe943550dec795e) |
+
+[Compare public C → public P0 tip](https://github.com/AbslanLaverde/bsnes/compare/f4a45d47797d4af0918768005b481f95e5ef4635...52cd72078fdc06a51ddeaa51efe943550dec795e). The [P0 report](P0_OUTPUT_BOUNDS_REPORT.md#public-investigation-source) preserves the original baseline and evidence attribution; the [publication map](../../research/BSNES_EXPERIMENT_PUBLICATION_MAP.md) explains the rewrite.
+
+**P0 bounds investigation only / implementation blocked.** EXP-004 implementation remains blocked pending completion of the separate native-baseline investigation, documented disposition, and explicit implementation re-authorization. Publishing the tests does not change this gate or select a native repair.
+
 ## 1. Purpose
 
 EXP-001, EXP-002 and EXP-003 established preservation of tiled-BG, OBJ and main/sub composition provenance under their tested conditions. EXP-004 investigates the next semantic boundary:

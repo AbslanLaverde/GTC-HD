@@ -97,6 +97,21 @@ Explore [docs/](docs/) for source-code research, emulator architecture investiga
 
 Detailed evidence belongs there; architectural choices must be supported before becoming production commitments.
 
+## Experimental Source Code
+
+GTC-HD research uses isolated bsnes experiment branches. The [public bsnes research fork](https://github.com/AbslanLaverde/bsnes) contains sanitized publication equivalents of the actual instrumentation and tests used by the documented research. These branches are research code, not production GTC-HD or an upstream bsnes release. Research questions, rationale, evidence, results and architectural implications live in this repository; bsnes remains an unselected research target.
+
+| Experiment / specification | Question | Source branch | Public commit | Results / status |
+| --- | --- | --- | --- | --- |
+| [EXP-001 — BG provenance](docs/experiments/EXP-001/SPEC.md) | Can tiled-background source identity survive native PPU processing? | [BG observer](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-001-passive-ppu-observation) | [5ba4d2a8b](https://github.com/AbslanLaverde/bsnes/commit/5ba4d2a8b12a82a09db1f76640e659303aef7e22) | [Verified for tested EXP-001 conditions](docs/experiments/EXP-001/RESULTS.md) |
+| [EXP-002 — OBJ provenance](docs/experiments/EXP-002/SPEC.md) | Can a surviving OBJ candidate retain its OAM and fetched-tile lineage? | [OBJ observer](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-002-obj-provenance) | [097775053](https://github.com/AbslanLaverde/bsnes/commit/0977750530fb94efb8ddfcec6f27bde8d530ccbc) | [Verified for tested EXP-002 conditions](docs/experiments/EXP-002/RESULTS.md) |
+| [EXP-003 — Main/Sub composition provenance](docs/experiments/EXP-003/SPEC.md) | Which native sources win main/sub composition, and can their provenance survive? | [Composition observer](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-003-composition-provenance) | [f4a45d477](https://github.com/AbslanLaverde/bsnes/commit/f4a45d47797d4af0918768005b481f95e5ef4635) | [Verified for tested EXP-003 conditions](docs/experiments/EXP-003/RESULTS.md) |
+| [EXP-004 — Color math / native sample provenance](docs/experiments/EXP-004/SPEC.md) | Can native color-math decisions and supplied output values retain source provenance? | [P0 investigation tests](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-004-color-math-provenance) | [52cd72078](https://github.com/AbslanLaverde/bsnes/commit/52cd72078fdc06a51ddeaa51efe943550dec795e) | [**P0 bounds investigation only / implementation blocked**](docs/experiments/EXP-004/P0_OUTPUT_BOUNDS_REPORT.md) |
+
+The shared [runtime-harness branch](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-001-runtime-harness), at public commit [ac488fe85](https://github.com/AbslanLaverde/bsnes/commit/ac488fe85289642bfedc6b5001146cc3effe6d8a), provides validation infrastructure; its [results and limitations](docs/experiments/EXP-001/RUNTIME_HARNESS_RESULTS.md) are documented separately.
+
+The [publication map](docs/research/BSNES_EXPERIMENT_PUBLICATION_MAP.md) links exact baseline comparisons and distinguishes historical implementation commits from their public equivalents. Historical executable hashes and ROM evidence remain tied to the original commits/builds. Focused publication validation is separate from ROM validation. The public EXP-004 branch contains the EXP-003 foundation plus P0 investigation tests; color-math provenance is not implemented.
+
 ## AI-assisted engineering
 
 GTC-HD uses AI assistance for source analysis, research, experiment design, implementation, testing, documentation, and architecture exploration. Technical claims are expected to rest on inspected source, reproducible experiments, measured results, and explicit decisions.

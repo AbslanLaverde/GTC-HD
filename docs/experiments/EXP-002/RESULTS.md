@@ -1,5 +1,41 @@
 # EXP-002 — OBJ / Sprite Provenance Preservation
 
+## Current result
+
+**Status:** VERIFIED FOR TESTED EXP-002 CONDITIONS
+
+**Implementation and supported build:** The OBJ observer is implemented; the MSYS2 UCRT64 desktop build and focused host tests passed. The completed historical real-ROM validation establishes the following additional results under the tested conditions.
+
+**Framebuffer passivity:** The retained EXP-002 observer-disabled B and observer-enabled C native-frame hash CSVs are byte-identical to each other and to the historical harness baseline A1 sequence. Each records 600 callbacks and successful completion. This is the tested deterministic framebuffer result, not proof of all execution-visible side effects.
+
+**OBJ provenance preservation:** The callback-500 summary records complete export of 29,772 records: 28,909 evaluations, 176 fetched-tile records and 687 surviving OBJ winner records, with no unknown winners, drops or overflow. The real capture preserves actual OAM evaluation → fetched row → surviving nontransparent OBJ candidate lineage, rather than reconstructing identity from later OAM or VRAM state.
+
+**Real overlap evidence:** Twelve retained winner records report multiple nontransparent samples. For example, winner `22993` at native OBJ X=32, V=173 links OAM slot 10 through evaluation `22786` and fetch `22956`, and retains preceding overwritten fetch `22952` from OAM slot 116. These are actual captured OBJ-overlap witnesses, separate from the synthetic overlap fixtures in the historical implementation section.
+
+**Limits and architectural implication:** OAM slots are reusable hardware identities, not persistent game entities. A surviving OBJ candidate is recorded before layer windows and BG/OBJ main/sub composition, so it does not establish final framebuffer visibility or final color. Complete CPU-visible passivity, universal compatibility, broad raster/mode coverage and persistent scene identity remain unproven. The result supports the semantic-preservation **HYPOTHESIS**; it does not accept a production architecture or select bsnes.
+
+The [final-validation addendum](#11-final-validation-addendum--retained-real-rom-evidence) documents EXP-002's retained artifacts, input fingerprints, executable-identity limits and completed result. This summary is based on that evidence and the accompanying session record; no new emulation run is claimed. The original implementation/test sections below remain historical records.
+
+## Public implementation
+
+Public fork: [AbslanLaverde/bsnes](https://github.com/AbslanLaverde/bsnes).
+
+| Identity | Commit / source |
+| --- | --- |
+| Historical implementation commit | `f0f90ee799969b735ca90b6dd9491219f0b9cc92` |
+| Historical baseline H | `906f74b6e5f4f2f4e62bb960d01aa68c9f55f919` |
+| Public research equivalent | [0977750530fb94efb8ddfcec6f27bde8d530ccbc](https://github.com/AbslanLaverde/bsnes/commit/0977750530fb94efb8ddfcec6f27bde8d530ccbc) |
+| Public baseline H | [ac488fe85289642bfedc6b5001146cc3effe6d8a](https://github.com/AbslanLaverde/bsnes/commit/ac488fe85289642bfedc6b5001146cc3effe6d8a) |
+| Public branch | [gtc-hd/exp-002-obj-provenance](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-002-obj-provenance) |
+
+[Compare public H → public EXP-002](https://github.com/AbslanLaverde/bsnes/compare/ac488fe85289642bfedc6b5001146cc3effe6d8a...0977750530fb94efb8ddfcec6f27bde8d530ccbc). See the [specification](SPEC.md) for scope and the [publication map](../../research/BSNES_EXPERIMENT_PUBLICATION_MAP.md) for rewrite details.
+
+The historical implementation commit records the changes described below; the original baseline-plus-uncommitted-changes context, executable hash and host-test evidence remain intact. They do not describe a build of the sanitized public commit. Focused publication validation remains separate from the completed historical real-ROM validation summarized above.
+
+## Historical implementation record — September 20, 2026
+
+Sections 1–10 retain the original implementation/test record. Pending validation, unknown runtime behavior and proposed A/B/C commands below describe that implementation pass; they do not supersede the [current result](#current-result).
+
 Date: September 20, 2026.
 
 **Status: IMPLEMENTED; UCRT64 DESKTOP BUILD AND FOCUSED HOST TESTS PASSED; ROM RUNTIME VALIDATION PENDING.** No ROM was loaded or executed. This implementation pass does not verify EXP-002's native framebuffer hypothesis. No commits, ADR, emulator selection, or accepted architecture changes were made.
@@ -252,3 +288,92 @@ New EXP-002 files:
 - `tests/exp002/run-tests.py`
 
 The sole project-document addition is this `docs/experiments/EXP-002/RESULTS.md`. No read-only checkout or canonical project-state file was modified. All implementation and documentation changes are left for review without staging or commits.
+
+## 11. Final-validation addendum — retained real-ROM evidence
+
+**Documentation reconciliation:** September 23, 2026. **Result:** VERIFIED FOR TESTED EXP-002 CONDITIONS.
+
+This addendum records the completed historical real-ROM validation from retained EXP-002 captures and the user's validation-session record. It supersedes the pending outcome of the September 20 implementation pass without rewriting sections 1–10. No test suite, build or ROM was executed during this documentation reconciliation. EXP-003's result is not used as substitute evidence for EXP-002.
+
+### 11.1 Source and executable identity
+
+| Identity | Historical reference |
+| --- | --- |
+| Harness baseline H / deterministic A reference | `906f74b6e5f4f2f4e62bb960d01aa68c9f55f919` on `gtc-hd/exp-001-runtime-harness` |
+| EXP-002 implementation / B and C source | `f0f90ee799969b735ca90b6dd9491219f0b9cc92` on `gtc-hd/exp-002-obj-provenance` |
+
+The retained historical checkouts were clean at those commits when inspected. The [public implementation mapping](#public-implementation) remains separate; the sanitized public commits are not the identities of these historical runs.
+
+| Executable fingerprint | Bytes | SHA-256 |
+| --- | --- | --- |
+| Retained harness executable; matches the historical harness build fingerprint | 7,082,253 | `77C88B940B132E030D8E9A809F807422DD123572509F464483B2EBEA153D50B9` |
+| Retained EXP-002 executable at reconciliation | 9,740,170 | `AEAE9CB788AC6F37627D39C3BA4FEA1C9535C11C61162F558D2BDA38921A1F53` |
+| Earlier implementation build, preserved from section 7 | 9,740,170 | `9817AE51988FCF85B50642DEA82498E142D68734981E183F42F5E22CEA5FBBB0` |
+
+**Identity limit:** The retained EXP-002 binary differs from the implementation-build fingerprint in section 7. Captures do not embed executable hashes or source commits, so the exact executable-to-capture binding cannot be established from these artifacts alone. The source/run association follows the historical experiment and session record; the retained executable fingerprint is recorded as such, not silently substituted for the earlier build hash or asserted to authenticate both B and C.
+
+### 11.2 Retained deterministic inputs
+
+The completed session used the established deterministic Super Mario World reference. The retained input set has these fingerprints:
+
+| Input | SHA-256 |
+| --- | --- |
+| `Super Mario World (U) [!].sfc` | `D70C9C7716AD12C674FC7DD744736AA48D4D7B4237F58066BE620FDA26024872` |
+| Deterministic settings seed | `E22FBA1B0E141499C94A25652C6A2FAEBEA27ADB8A11D4EC2E84BEDA43A8FA6B` |
+| Deterministic SRAM seed | `D0FF1B294B5288D1AE1421EADF5B2D38A8752B76D472FF30BED9028E25B1C5B8` |
+
+The seed specifies cycle PPU, `Entropy=None`, zero run-ahead frames, rewind frequency zero, automatic state loading off and blur off. The mutable working settings differ from the seed; hashes identify retained inputs, while the captures do not independently prove per-run seed restoration or live-input history. No ROM, settings or SRAM contents or private input/storage paths are published.
+
+### 11.3 Completed framebuffer comparison
+
+`EXP002_B_FRAME_HASHES.csv` and `EXP002_C_FRAME_HASHES.csv` are byte-identical to each other and to the retained A1/A2 deterministic harness reference. They each contain indices 0–599, 512×480 native samples, 1,024-byte pitch, scale 1, and the footer `actual_callbacks=600`, `completed=true`, `reason=count_reached`.
+
+The complete-file SHA-256 for both EXP-002 files and the reference is:
+
+```text
+92B098CF30A4171F707185B2A32918B8F361EDF30AC8BA6AA3F1FEAD39BAE96F
+```
+
+Thus the historical observer-disabled/enabled comparison matches the established deterministic reference for the tested 600-callback slice. It supports native framebuffer passivity under those conditions, not complete execution-state equivalence.
+
+### 11.4 Completed capture and actual lineage
+
+`EXP002_C_CALLBACK_500_OBJ.csv.summary.txt` records:
+
+| Recorded field | Value |
+| --- | --- |
+| Requested callback start / count / exclusive end | 500 / 1 / 501 |
+| Window started / completed; observed callbacks | true / true; 1 |
+| Total native callbacks | 600 |
+| Total records | 29,772 |
+| Evaluation / fetched-tile / final OBJ winner records | 28,909 / 176 / 687 |
+| Record bytes / retained bytes | 104 / 3,096,288 |
+| Capacity / dropped records / overflow | 131,072 / 0 / false |
+| Unknown winners | 0 |
+| Observer enabled at export | false |
+| Export attempted / succeeded; capture complete | true / true; true |
+| Reason | `window_complete` |
+
+The retained CSV agrees with the summary counts. Every one of the 687 winner records has `source_known=1`, references a retained fetch record, and links through that fetch to a selected evaluation with the same OAM index. These are actual OAM → evaluation → fetch → surviving OBJ candidate associations from the runtime capture, not synthetic records or persistent game-entity IDs.
+
+Twelve winner records have `nontransparent_samples > 1`: `22993`, `22994`, `23175`, `23177`, `23178`, `23180`, `23347`, `23349`, `23350`, `23352`, `23507`, `23509`. These are twelve recorded overlapping-sample winners, not a claim of twelve distinct game objects or independent overlap events.
+
+One concrete witness is winner `22993` at native X=32, V=173, H=186. It retains two nontransparent samples and the following lineage:
+
+| Role | OAM slot | Evaluation record | Fetch record |
+| --- | --- | --- | --- |
+| Surviving sample | 10 | `22786` | `22956` |
+| Immediately preceding overwritten sample | 116 | `22937` | `22952` |
+
+The winning sample has source X=3, color index 1 and palette index 129. The record preserves which native OBJ sample survived overlap, before layer windows and main/sub BG/OBJ composition can affect its eventual visibility.
+
+| Retained artifact | SHA-256 |
+| --- | --- |
+| `EXP002_C_CALLBACK_500_OBJ.csv` | `7974E49DEE1EF8110453938B54201042BA79AFB3A1BFA57260EC220C93FC49C8` |
+| `EXP002_C_CALLBACK_500_OBJ.csv.summary.txt` | `7F043C2BECACB9492BED24775BDB7E735CE41F63A6ADB284C4E42128841BBC0A` |
+
+### 11.5 Conclusion and remaining limits
+
+**OBJ provenance preservation, real native-overlap lineage and native framebuffer passivity are VERIFIED FOR TESTED EXP-002 CONDITIONS.** The previously pending runtime validation is complete for the recorded slice.
+
+OAM slots and fetched-row IDs do not establish persistent game-entity identity. A native OBJ winner does not establish final framebuffer visibility, final-pixel provenance or final color after composition/color math. Framebuffer equality does not prove all CPU-visible side effects, complete state equality, universal compatibility, worst-case runtime cost or coverage of every sprite mode/raster transition. The executable/input binding limits above remain explicit. This result supports continued semantic-preservation research; no accepted production architecture or emulator selection follows from it.

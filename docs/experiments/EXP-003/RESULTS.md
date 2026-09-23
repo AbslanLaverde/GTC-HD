@@ -15,6 +15,22 @@ It does **not** establish universal correctness across all SNES software, comple
 
 ---
 
+## Public implementation
+
+Public fork: [AbslanLaverde/bsnes](https://github.com/AbslanLaverde/bsnes).
+
+| Identity | Commit / source |
+| --- | --- |
+| Historical implementation commit | `76bdb9250befa62fcbf23fcff2ef962fe2f58215` |
+| Historical baseline H | `906f74b6e5f4f2f4e62bb960d01aa68c9f55f919` |
+| Public research equivalent | [f4a45d47797d4af0918768005b481f95e5ef4635](https://github.com/AbslanLaverde/bsnes/commit/f4a45d47797d4af0918768005b481f95e5ef4635) |
+| Public baseline H | [ac488fe85289642bfedc6b5001146cc3effe6d8a](https://github.com/AbslanLaverde/bsnes/commit/ac488fe85289642bfedc6b5001146cc3effe6d8a) |
+| Public branch | [gtc-hd/exp-003-composition-provenance](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-003-composition-provenance) |
+
+[Compare public H → public EXP-003](https://github.com/AbslanLaverde/bsnes/compare/ac488fe85289642bfedc6b5001146cc3effe6d8a...f4a45d47797d4af0918768005b481f95e5ef4635). See the [specification](SPEC.md) for scope and the [publication map](../../research/BSNES_EXPERIMENT_PUBLICATION_MAP.md) for rewrite details.
+
+The executable SHA-256 and ROM/framebuffer evidence below remain attributed to the historical implementation commit and build. The public equivalent preserves native experiment semantics; its separate focused publication checks did not produce the historical ROM evidence. **VERIFIED FOR TESTED EXP-003 CONDITIONS** retains exactly the scope and limitations recorded below.
+
 ## 1. What EXP-003 investigated
 
 EXP-001 demonstrated that useful tiled-background provenance can be preserved before the native PPU discards it.

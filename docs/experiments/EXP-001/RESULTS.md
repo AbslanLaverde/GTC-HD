@@ -1,5 +1,38 @@
 # EXP-001 — Passive PPU Observation: implementation results
 
+## Current result
+
+**Status:** VERIFIED FOR TESTED EXP-001 CONDITIONS
+
+**Implementation:** Passive tiled-BG observation and runtime callback-window controls are implemented. **Supported build:** The MSYS2 UCRT64 desktop build passed, as recorded in section 12.5.
+
+**Deterministic real-ROM framebuffer passivity:** The retained Super Mario World title-sequence runs A1, A2, B, B2 and C have byte-identical native-frame hash CSVs, each with 600 callbacks and a successful completion footer. The completed B2/C evidence supersedes the pending checkpoint in section 12; this is framebuffer passivity under those tested conditions, not universal execution equivalence.
+
+**BG provenance preservation:** The retained C summary records successful capture of callback 500, with one observed callback, 23,760 records, no drops or overflow, and the observer disabled after export. The real capture retains BG, map-entry, tile/character, source-coordinate, palette, priority and timing information from the native fetch path. This supports preservation of tiled-BG source provenance under the tested conditions; a fetch record does not establish final-pixel visibility.
+
+**Limits and architectural implication:** Complete CPU-visible PPU-side-effect equality, whole-emulator serialized-state equality and runtime overhead are not established by matching framebuffer hashes. Mode 7, complete final-pixel provenance and universal game/PPU-mode coverage remain outside this result. Semantic preservation remains an architectural **HYPOTHESIS** supported by this experiment, not an accepted GTC-HD architecture or selection of bsnes.
+
+The [final-validation addendum](#13-final-validation-addendum--retained-real-rom-evidence) documents the retained artifacts, input fingerprints, executable-identity limits and completed result. This summary is based on that EXP-001 evidence and the accompanying session record; no new emulation run is claimed. The dated implementation checkpoints below remain historical records.
+
+## Public implementation
+
+Public fork: [AbslanLaverde/bsnes](https://github.com/AbslanLaverde/bsnes). The observer tip includes the runtime-window controls described in section 12.
+
+| Identity | Commit / source |
+| --- | --- |
+| Historical implementation commit | `ba148bedc74892722de93633ce08190dda406bf7` |
+| Public research equivalent | [5ba4d2a8b12a82a09db1f76640e659303aef7e22](https://github.com/AbslanLaverde/bsnes/commit/5ba4d2a8b12a82a09db1f76640e659303aef7e22) |
+| Public branch | [gtc-hd/exp-001-passive-ppu-observation](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-001-passive-ppu-observation) |
+| Unchanged upstream baseline U | `7d5aa1e656b9171524d01b1b22917197d8121cb4` |
+
+[Compare upstream U → public observer tip](https://github.com/AbslanLaverde/bsnes/compare/7d5aa1e656b9171524d01b1b22917197d8121cb4...5ba4d2a8b12a82a09db1f76640e659303aef7e22). See the [specification](SPEC.md) for scope and the [publication map](../../research/BSNES_EXPERIMENT_PUBLICATION_MAP.md) for rewrite details.
+
+The dated implementation passes below retain their original HEADs, uncommitted-source fingerprints, executable hashes and runtime evidence. Those builds are not reattributed to the public equivalent. The historical runtime-harness identity and its public equivalent remain separate in the [runtime-harness report](RUNTIME_HARNESS_RESULTS.md#public-implementation). Publication validation does not change EXP-001's recorded verification status.
+
+## Historical implementation checkpoints — September 18–19, 2026
+
+The following opening notes and sections 1–11 describe the September 18 implementation pass; section 12 records the September 19 runtime-controls pass. Build blockers, pending validation, proposed commands and statements that EXP-001 had not passed describe those points in time. The [current result](#current-result) above incorporates the later completed runtime evidence.
+
 **Latest update — September 19, 2026:** Observer runtime callback-window controls are implemented and the supported UCRT64 build passed. B2/C ROM validation remains pending. See [section 12](#12-runtime-observer-window-controls--september-19-2026). Sections 1–11 below retain the historical September 18 implementation-pass results, including its then-current build blocker; they are not the current build status.
 
 **Date:** September 18, 2026  
@@ -294,6 +327,8 @@ Only these runtime results can support the EXP-001 passivity hypothesis for the 
 
 ## 12. Runtime observer window controls — September 19, 2026
 
+**Historical checkpoint:** The pending status and proposed B2/C runs in this section describe the September 19 implementation pass. See the [current result](#current-result) for the later completed runtime conclusion.
+
 **Status: IMPLEMENTED / SUPPORTED BUILD PASSED / B2 AND C RUNTIME VALIDATION PENDING.** No ROM was loaded or executed during this implementation pass. EXP-001 is not marked verified, and no GTC-HD architecture decision has been made.
 
 ### 12.1 Starting evidence, authority, and repository identity
@@ -498,3 +533,79 @@ echo "C exit: $?"
 C also creates `C-callback-500-provenance.csv.summary.txt`. Require requested start 500/count 1/end 501, started/completed true, observed callbacks 1, total native callbacks 600, successful export, disabled observer at export, and explicit count/drop/overflow values. If overflow occurs, preserve that evidence and treat provenance as incomplete even if native hashes match. Do not preemptively increase capacity.
 
 Compare the entire B2 and C frame-hash files to each other and to the prior A1/A2/B evidence, including all 600 ordered rows and completion footers. Their expected common digest is the user-provided value in section 12.1 **only if the actual reruns establish equality**. Inspect real provenance separately for meaningful BG/map/tile activity, timing/order, field interpretation, and bounded-buffer pressure. Emulator-state and performance questions remain open; matching framebuffer hashes alone cannot prove every CPU-visible side effect is unchanged.
+
+## 13. Final-validation addendum — retained real-ROM evidence
+
+**Documentation reconciliation:** September 23, 2026. **Result:** VERIFIED FOR TESTED EXP-001 CONDITIONS.
+
+This addendum records the completed historical B2/C validation from retained artifacts and the user's validation-session record. It supersedes the pending outcome of section 12 without changing that dated implementation record. Artifact inspection and fingerprinting during documentation reconciliation did not run a test suite, rebuild an executable or execute a ROM. The evidence below comes from EXP-001's own captures.
+
+### 13.1 Source and executable identity
+
+| Identity | Historical reference |
+| --- | --- |
+| Harness baseline H / A reference | `906f74b6e5f4f2f4e62bb960d01aa68c9f55f919` on `gtc-hd/exp-001-runtime-harness` |
+| Observer with runtime controls / B2 and C source | `ba148bedc74892722de93633ce08190dda406bf7` on `gtc-hd/exp-001-passive-ppu-observation` |
+| Earlier observer/harness stage recorded in section 12.1 | `2e0eeaa1580487f277e60f6ef55b9c74ca1026ae` |
+
+The retained historical harness and observer checkouts were clean at H and the observer tip above when inspected. Their public equivalents remain separately identified in [Public implementation](#public-implementation); public commits did not produce these historical captures.
+
+| Executable fingerprint | Bytes | SHA-256 |
+| --- | --- | --- |
+| Retained harness executable; matches the historical harness build fingerprint | 7,082,253 | `77C88B940B132E030D8E9A809F807422DD123572509F464483B2EBEA153D50B9` |
+| Retained EXP-001 executable at reconciliation | 9,729,667 | `498E96F2643E87E73E6C2E63DF1EA1F396F74309DDD92B5FBB9C40A0C3AE0AC8` |
+| Earlier runtime-controls implementation build, preserved from section 12.5 | 9,729,667 | `0DEB112ECC1DDD44667A4355C68D00C6F54B84FCE19B0367ABCB750D440BC9FA` |
+
+**Identity limit:** The retained observer executable differs from the earlier documented build. The frame/provenance CSVs do not embed an executable hash, source commit or per-run input manifest. The source/run association above follows the historical experiment and session record; the exact executable-to-capture binding cannot be established from these artifacts alone. The retained fingerprint is not retroactively assigned to the earlier B run or substituted for section 12.5's build evidence.
+
+### 13.2 Retained deterministic inputs
+
+The session identifies the Super Mario World title-sequence validation described in section 12.1. The retained input files have these fingerprints:
+
+| Input | SHA-256 |
+| --- | --- |
+| `Super Mario World (U) [!].sfc` | `D70C9C7716AD12C674FC7DD744736AA48D4D7B4237F58066BE620FDA26024872` |
+| Deterministic settings seed | `E22FBA1B0E141499C94A25652C6A2FAEBEA27ADB8A11D4EC2E84BEDA43A8FA6B` |
+| Deterministic SRAM seed | `D0FF1B294B5288D1AE1421EADF5B2D38A8752B76D472FF30BED9028E25B1C5B8` |
+
+The retained settings seed specifies cycle PPU (`Fast=false`), `Entropy=None`, zero run-ahead frames, rewind frequency zero, automatic state loading off and blur off. These are retained input bytes, not a newly reconstructed command line. The mutable working settings differ from the seed; the CSVs alone do not establish seed restoration or live input for each historical process. The session's deterministic-run attribution and this evidence limit are both retained. ROM, settings and SRAM contents and their private storage locations are not published.
+
+### 13.3 Completed framebuffer comparison
+
+The five retained files `A1_LONG_FRAME_HASHES.csv`, `A2_LONG_FRAME_HASHES.csv`, `B_LONG_FRAME_HASHES.csv`, `B2_LONG_FRAME_HASHES.csv` and `C_LONG_FRAME_HASHES.csv` are byte-identical. Each contains callback indices 0–599, layout 512×480, pitch 1,024 bytes, scale 1, and the footer `actual_callbacks=600`, `completed=true`, `reason=count_reached`.
+
+Their common complete-file SHA-256 is:
+
+```text
+92B098CF30A4171F707185B2A32918B8F361EDF30AC8BA6AA3F1FEAD39BAE96F
+```
+
+Thus the completed B2/C runs match each other and the established A1/A2/B reference. This extends the earlier reference digest in section 12.1 with actual retained B2/C evidence; it is not an assumption that a recommended command succeeded. It verifies native framebuffer passivity for this deterministic slice.
+
+### 13.4 Completed BG capture and provenance
+
+`C_CALLBACK_500_PROVENANCE.csv.summary.txt` records:
+
+| Recorded field | Value |
+| --- | --- |
+| Requested callback start / count / exclusive end | 500 / 1 / 501 |
+| Window started / completed; observed callbacks | true / true; 1 |
+| Total native callbacks | 600 |
+| Retained records / capacity | 23,760 / 32,768 |
+| Dropped records / overflow | 0 / false |
+| Observer enabled at export | false |
+| Export attempted / succeeded; capture complete | true / true; true |
+| Reason | `window_complete` |
+
+The retained CSV contains those 23,760 BG-fetch records, including BG IDs 0–2 in BG mode 1, with actual map entries, character-row addresses, source coordinates, palette/priority values and native timing. Its observer frame IDs include 500 and 501. This is consistent with the callback-producing run interval in section 12.3; callback 500 is not redefined as one V=0-to-V=0 PPU period. The capture includes naturally scheduled fetch work, not only final visible pixels.
+
+| Retained artifact | SHA-256 |
+| --- | --- |
+| `C_CALLBACK_500_PROVENANCE.csv` | `BCC8E15D28C2A7918E65ED03BA467F33A767EA7EDB3837B8BBF60C4E95B03964` |
+| `C_CALLBACK_500_PROVENANCE.csv.summary.txt` | `AEFA348E6DBEBF3704A8307B58EEA7FCDC125D2E91BA1F473D04E907ABFF1D1A` |
+
+### 13.5 Conclusion and remaining limits
+
+**BG provenance preservation and native framebuffer passivity are VERIFIED FOR TESTED EXP-001 CONDITIONS.** Implementation and the supported build are complete, and the previously pending B2/C comparison is complete for the recorded slice.
+
+This does not prove every CPU-visible side effect unchanged, complete emulator-state equality, unmeasured runtime cost, universal game/mode compatibility, Mode 7 provenance or final framebuffer visibility of each BG fetch. The executable/input binding limits in sections 13.1–13.2 remain explicit. Semantic preservation remains an architectural hypothesis requiring further experiments; no production architecture or emulator foundation is accepted by this result.

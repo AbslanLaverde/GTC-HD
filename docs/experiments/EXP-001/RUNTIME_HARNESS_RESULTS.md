@@ -1,5 +1,30 @@
 # EXP-001 — Runtime validation harness
 
+## Current context
+
+**Harness:** IMPLEMENTED / SUPPORTED BUILD PASSED / EXERCISED IN COMPLETED EXP-001 RUNTIME VALIDATION.
+
+The [current EXP-001 result](RESULTS.md#current-result) is **VERIFIED FOR TESTED EXP-001 CONDITIONS**: retained deterministic real-ROM A1/A2/B/B2/C native-frame CSVs agree across 600 completed callbacks. This establishes the tested framebuffer comparison, not complete execution-state equivalence or universal harness correctness. The September 19 record below describes the earlier harness implementation pass, when no native callbacks had yet been captured in that task.
+
+## Public implementation
+
+Public fork: [AbslanLaverde/bsnes](https://github.com/AbslanLaverde/bsnes). This branch provides shared validation infrastructure, independently of the BG observer branch.
+
+| Identity | Commit / source |
+| --- | --- |
+| Historical runtime-harness commit H | `906f74b6e5f4f2f4e62bb960d01aa68c9f55f919` |
+| Public research equivalent H | [ac488fe85289642bfedc6b5001146cc3effe6d8a](https://github.com/AbslanLaverde/bsnes/commit/ac488fe85289642bfedc6b5001146cc3effe6d8a) |
+| Public branch | [gtc-hd/exp-001-runtime-harness](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-001-runtime-harness) |
+| Unchanged upstream baseline U | `7d5aa1e656b9171524d01b1b22917197d8121cb4` |
+
+[Compare upstream U → public harness H](https://github.com/AbslanLaverde/bsnes/compare/7d5aa1e656b9171524d01b1b22917197d8121cb4...ac488fe85289642bfedc6b5001146cc3effe6d8a). The [publication map](../../research/BSNES_EXPERIMENT_PUBLICATION_MAP.md) explains the historical/public identities.
+
+H records the historical harness implementation; the report below preserves its earlier uncommitted implementation-pass context. Its executable hash and build evidence remain historical and do not identify a public rebuild. Focused publication checks remain separate from the historical real-ROM comparison summarized in the current EXP-001 result.
+
+## Historical harness implementation record — September 19, 2026
+
+All pending/unverified statements, zero-callback counts and next-step recommendations below refer to this implementation pass, not the later completed experiment. Its build hashes and evidence remain unchanged.
+
 **Date:** September 19, 2026  
 **Status:** IMPLEMENTED / SUPPORTED BUILD PASSED / NATIVE RUNTIME VALIDATION PENDING  
 **Native callbacks captured in this task:** 0  

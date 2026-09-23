@@ -10,6 +10,19 @@ P0 establishes the index boundary and demonstrates layout-sensitive consequences
 
 Labels distinguish **SOURCE OBSERVATION**, **HOST-TEST EVIDENCE**, **INFERENCE** and **UNKNOWN**. A host fixture with changed backing storage is not proof of native C++ undefined-behavior execution.
 
+## Public investigation source
+
+Public fork: [AbslanLaverde/bsnes](https://github.com/AbslanLaverde/bsnes). Public branch: [gtc-hd/exp-004-color-math-provenance](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-004-color-math-provenance).
+
+| Identity | Historical commit | Public research equivalent |
+| --- | --- | --- |
+| Composition baseline C | `76bdb9250befa62fcbf23fcff2ef962fe2f58215` | [f4a45d47797d4af0918768005b481f95e5ef4635](https://github.com/AbslanLaverde/bsnes/commit/f4a45d47797d4af0918768005b481f95e5ef4635) |
+| P0 test tip P | `94e12628b6dc9580e61fc3322be4a011328b0fe5` | [52cd72078fdc06a51ddeaa51efe943550dec795e](https://github.com/AbslanLaverde/bsnes/commit/52cd72078fdc06a51ddeaa51efe943550dec795e) |
+
+[Compare public C → public P0 tip](https://github.com/AbslanLaverde/bsnes/compare/f4a45d47797d4af0918768005b481f95e5ef4635...52cd72078fdc06a51ddeaa51efe943550dec795e). P records the P0 tests that were uncommitted during the investigation below; the original evidence remains tied to historical C and those test sources. The public runner separately corrects the committed-tip policy: public C must be an ancestor of HEAD on the expected branch, and committed/working native bsnes source must remain identical to public C. The public P tip need not equal the native baseline.
+
+The public branch contains the sanitized EXP-003 foundation plus EXP-004-P0 investigation tests. It **does not contain color-math provenance implementation**. **P0 bounds investigation only / implementation blocked:** the separate native-baseline investigation must be completed, its disposition documented, and implementation explicitly re-authorized. The [specification gate](SPEC.md) and **STOP FOR SEPARATE NATIVE-BASELINE INVESTIGATION** disposition are unchanged. The [publication map](../../research/BSNES_EXPERIMENT_PUBLICATION_MAP.md) distinguishes later focused publication validation from this historical host-fixture evidence; neither is ROM validation.
+
 ## 1. Question
 
 Can EXP-004 observe native output destinations and supplied values without changing the frozen baseline, and is the inherited apparent bounds mismatch only a diagnostic accounting concern?
