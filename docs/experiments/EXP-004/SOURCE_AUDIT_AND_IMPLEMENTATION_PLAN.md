@@ -15,7 +15,7 @@ Evidence labels used throughout:
 
 ## 1. Starting state / commit / branch
 
-**SOURCE OBSERVATION:** The research target was the clean worktree `C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004`, on branch `gtc-hd/exp-004-color-math-provenance`, at:
+**SOURCE OBSERVATION:** The research target was the clean worktree `experiments/bsnes-exp-004/`, on branch `gtc-hd/exp-004-color-math-provenance`, at:
 
 ```text
 76bdb9250befa62fcbf23fcff2ef962fe2f58215
@@ -30,30 +30,30 @@ This exactly matches the requested starting commit. Its configured origin is `ht
 
 ## 2. Files inspected
 
-Source links below refer to the EXP-004 worktree and the revision above. Line numbers are those at the audited revision. These identifiers are reused in the findings.
+Source-relative paths below refer to the external EXP-004 worktree and the branch/commit recorded above; these files are not tracked in the GTC-HD documentation repository. Line numbers are those at the audited revision. These identifiers are reused in the findings.
 
 | ID | File / inspected responsibility |
 |---|---|
-| S1 | [screen.cpp][S1]: scanline initialization, run, below, above, blend, palette/direct/fixed color, power |
-| S2 | [screen.hpp][S2]: Screen IO, Math, CGRAM, output pointers |
-| S3 | [window.cpp][S3] and [window.hpp][S3H]: layer suppression, color outputs, masks, state |
-| S4 | [io.cpp][S4]: memory access helpers, CGRAM ports, display/color/window registers |
-| S5 | [serialization.cpp][S5]: PPU load reset and native window/screen serialization |
-| S6 | [main.cpp][S6]: scanline/frame lifecycle, BG phases, render ordering, stepping |
-| S7 | [ppu.cpp][S7] and [ppu.hpp][S7H]: light table, storage, power/reset, refresh |
-| S8 | [exp003-composition.hpp][S8] and [exp003-composition.cpp][S8C]: records, lineage, resolution, bounds, export |
-| S9 | [exp003-hooks.cpp][S9]: position/context and before/after-window snapshots |
-| S10 | [background.cpp][S10]: fetch/plane/sample lineage, mosaic, true-hires phases |
-| S11 | [object.cpp][S11]: OBJ sample/fetch lineage, palettes and output |
-| S12 | [exp003-composition-window.hpp][S12]: callback controller and export lifecycle |
-| S13 | [program.cpp][S13], [program.hpp][S13H], [bsnes.cpp][S13B]: controller integration, guards and CLI |
-| S14 | [exp001-frame-hash.hpp][S14], [platform.cpp][S14P], [video.cpp][S14V]: callback hashing, presentation boundary, RGB interpretation |
-| S15 | [composition-test.cpp][S15], [run-tests.py][S15R], [observer-window-test.cpp][S15W], [observer-window-cli-test.py][S15C]: existing fixtures and their limits |
-| S16 | [system/serialization.cpp][S16], [system.cpp][S16S], [cpu/timing.cpp][S16T]: save/load and frame event boundary |
-| S17 | [bsnes/GNUmakefile][S17], [nall/GNUmakefile][S17N]: supported build configuration |
-| S18 | [random.hpp][S18], [counter.hpp][S18C], [counter-inline.hpp][S18I]: initialization entropy and scanline counter details |
+| S1 | `bsnes/sfc/ppu/screen.cpp:1`: scanline initialization, run, below, above, blend, palette/direct/fixed color, power |
+| S2 | `bsnes/sfc/ppu/screen.hpp:1`: Screen IO, Math, CGRAM, output pointers |
+| S3 | `bsnes/sfc/ppu/window.cpp:5` and `bsnes/sfc/ppu/window.hpp:1`: layer suppression, color outputs, masks, state |
+| S4 | `bsnes/sfc/ppu/io.cpp:1`: memory access helpers, CGRAM ports, display/color/window registers |
+| S5 | `bsnes/sfc/ppu/serialization.cpp:1`: PPU load reset and native window/screen serialization |
+| S6 | `bsnes/sfc/ppu/main.cpp:1`: scanline/frame lifecycle, BG phases, render ordering, stepping |
+| S7 | `bsnes/sfc/ppu/ppu.cpp:18` and `bsnes/sfc/ppu/ppu.hpp:53`: light table, storage, power/reset, refresh |
+| S8 | `bsnes/sfc/ppu/exp003-composition.hpp:1` and `bsnes/sfc/ppu/exp003-composition.cpp:1`: records, lineage, resolution, bounds, export |
+| S9 | `bsnes/sfc/ppu/exp003-hooks.cpp:1`: position/context and before/after-window snapshots |
+| S10 | `bsnes/sfc/ppu/background.cpp:1`: fetch/plane/sample lineage, mosaic, true-hires phases |
+| S11 | `bsnes/sfc/ppu/object.cpp:61`: OBJ sample/fetch lineage, palettes and output |
+| S12 | `bsnes/target-bsnes/program/exp003-composition-window.hpp:1`: callback controller and export lifecycle |
+| S13 | `bsnes/target-bsnes/program/program.cpp:113`, `bsnes/target-bsnes/program/program.hpp:1`, `bsnes/target-bsnes/bsnes.cpp:20`: controller integration, guards and CLI |
+| S14 | `bsnes/target-bsnes/program/exp001-frame-hash.hpp:1`, `bsnes/target-bsnes/program/platform.cpp:205`, `bsnes/target-bsnes/program/video.cpp:65`: callback hashing, presentation boundary, RGB interpretation |
+| S15 | `tests/exp003/composition-test.cpp:1`, `tests/exp003/run-tests.py:1`, `tests/exp003/observer-window-test.cpp:1`, `tests/exp003/observer-window-cli-test.py:1`: existing fixtures and their limits |
+| S16 | `bsnes/sfc/system/serialization.cpp:1`, `bsnes/sfc/system/system.cpp:11`, `bsnes/sfc/cpu/timing.cpp:132`: save/load and frame event boundary |
+| S17 | `bsnes/GNUmakefile:1`, `nall/GNUmakefile:53`: supported build configuration |
+| S18 | `bsnes/emulator/random.hpp:12`, `bsnes/sfc/ppu/counter/counter.hpp:1`, `bsnes/sfc/ppu/counter/counter-inline.hpp:1`: initialization entropy and scanline counter details |
 
-**SOURCE OBSERVATION:** Supporting project material inspected included [EXP-003 results][D3], the EXP-001 results/runtime-harness notes, and the EXP-004 specification. Retained evidence inspected included EXP-003's `tests/exp003/build/validation-final/{composition,baseline,window,frame-hash,cli}-run.log`, the two 1,800-callback CSVs under `local/EXP-003/output`, the callback-500 summary and endpoint rows, and relevant deterministic seed settings. These were read only; ROM content was not executed.
+**SOURCE OBSERVATION:** Supporting project material inspected included [EXP-003 results](../EXP-003/RESULTS.md#9-implementation-record), the EXP-001 results/runtime-harness notes, and the EXP-004 specification. Retained evidence inspected included EXP-003's `<HOST_TEST_OUTPUT_DIR>/validation-final/{composition,baseline,window,frame-hash,cli}-run.log`, the two 1,800-callback CSVs under `<CAPTURE_OUTPUT_DIR>`, the callback-500 summary and endpoint rows, and relevant deterministic seed settings. These were read only; ROM content was not executed.
 
 ## 3. Native color pipeline
 
@@ -434,38 +434,3 @@ All stages are **INFERENCE — proposed future work**, contingent on an implemen
 **INFERENCE — REVISE EXP-004, then proceed with staged implementation.** Keep the color-math/native-sample question and the 1,800-callback B/C design with initial callback 500. Before implementation, adopt carried-main operands, copied native/control history, explicit seed/unknown semantics, separate BGR555/RGB555 values, and valid-destination accounting. Investigate the inherited bounds concern as the first focused prerequisite; if it requires native repair, handle that in a separate authorized baseline task and regenerate the reference as necessary.
 
 **UNKNOWN:** EXP-004's preservation/passivity hypothesis is not yet verified. The next authorized action should be the focused prerequisite and implementation/test stages above, not production renderer work or emulator selection. Successful experimental results would remain evidence for the semantic-preservation hypothesis, not accepted GTC-HD architecture.
-
-[S1]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/screen.cpp:1
-[S2]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/screen.hpp:1
-[S3]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/window.cpp:5
-[S3H]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/window.hpp:1
-[S4]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/io.cpp:1
-[S5]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/serialization.cpp:1
-[S6]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/main.cpp:1
-[S7]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/ppu.cpp:18
-[S7H]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/ppu.hpp:53
-[S8]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/exp003-composition.hpp:1
-[S8C]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/exp003-composition.cpp:1
-[S9]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/exp003-hooks.cpp:1
-[S10]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/background.cpp:1
-[S11]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/object.cpp:61
-[S12]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/target-bsnes/program/exp003-composition-window.hpp:1
-[S13]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/target-bsnes/program/program.cpp:113
-[S13H]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/target-bsnes/program/program.hpp:1
-[S13B]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/target-bsnes/bsnes.cpp:20
-[S14]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/target-bsnes/program/exp001-frame-hash.hpp:1
-[S14P]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/target-bsnes/program/platform.cpp:205
-[S14V]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/target-bsnes/program/video.cpp:65
-[S15]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/tests/exp003/composition-test.cpp:1
-[S15R]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/tests/exp003/run-tests.py:1
-[S15W]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/tests/exp003/observer-window-test.cpp:1
-[S15C]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/tests/exp003/observer-window-cli-test.py:1
-[S16]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/system/serialization.cpp:1
-[S16S]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/system/system.cpp:11
-[S16T]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/cpu/timing.cpp:132
-[S17]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/GNUmakefile:1
-[S17N]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/nall/GNUmakefile:53
-[S18]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/emulator/random.hpp:12
-[S18C]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/counter/counter.hpp:1
-[S18I]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/counter/counter-inline.hpp:1
-[D3]: C:/Users/User/Documents/GTC-HD-Lab/docs/experiments/EXP-003/RESULTS.md:391

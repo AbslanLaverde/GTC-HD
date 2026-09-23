@@ -22,7 +22,7 @@ P0 investigates exact logical indices, native call/store gating, overscan cleari
 
 ```text
 Repository origin: https://github.com/bsnes-emu/bsnes.git
-Worktree: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004
+Worktree: experiments/bsnes-exp-004/
 Branch: gtc-hd/exp-004-color-math-provenance
 HEAD: 76bdb9250befa62fcbf23fcff2ef962fe2f58215
 Subject: Implement EXP-003 composition provenance observer
@@ -35,29 +35,31 @@ The GTC-HD documentation repository started clean on `main` at `5723b1697fd9f3e0
 Toolchain:
 
 - MSYS2 UCRT64 `g++.exe (Rev3, Built by MSYS2 project) 16.2.0`.
-- Windows Python 3.12.9 at `C:/Users/User/miniconda3/python.exe`.
+- Windows Python 3.12.9.
 - C++17 builds at `-O0` and `-O3`; assertions remain enabled.
+
+Source-relative references below identify files in the external `experiments/bsnes-exp-004/` checkout at the branch and commit above. The P0 test files were uncommitted additions described in section 5, not files in that baseline commit. `<OUTPUT_DIR>` denotes the ignored generated evidence directory; artifact filenames and run identifiers are retained without publishing its private location.
 
 ## 3. Source observations
 
-**SOURCE OBSERVATION — [native PPU declaration][ppu-h]:** `PPU` declares these consecutive members:
+**SOURCE OBSERVATION — native PPU declaration (`bsnes/sfc/ppu/ppu.hpp:59`):** `PPU` declares these consecutive members:
 
 ```cpp
 uint16 output[512 * 480];
 uint16 lightTable[16][32768];
 ```
 
-The output subobject contains **245,760 uint16 samples**, valid element indices **0–245,759**, or 491,520 bytes. `PPU::refresh()` exposes this as 512×480 with 1,024-byte pitch; it does not enlarge the allocation ([refresh][refresh]).
+The output subobject contains **245,760 uint16 samples**, valid element indices **0–245,759**, or 491,520 bytes. `PPU::refresh()` exposes this as 512×480 with 1,024-byte pitch; it does not enlarge the allocation (`bsnes/sfc/ppu/ppu.cpp:192`).
 
-**SOURCE OBSERVATION — [Screen::scanline][screen]:** Output placement uses **latched** `display.overscan` and `display.interlace`, plus the current field. It computes pointers on every scanline before the late-scanline check in `PPU::main()`.
+**SOURCE OBSERVATION — Screen::scanline (`bsnes/sfc/ppu/screen.cpp:1`):** Output placement uses **latched** `display.overscan` and `display.interlace`, plus the current field. It computes pointers on every scanline before the late-scanline check in `PPU::main()`.
 
-**SOURCE OBSERVATION — [PPU::main][main]:** `screen.scanline()` executes before `if(vcounter() > 240) { step(hperiod()); return; }`. Rendering cycles are present through V=240 inclusive. `cycleRenderPixel()` runs at H=58+4x for x=0–255 ([render cycles][cycles]).
+**SOURCE OBSERVATION — PPU::main (`bsnes/sfc/ppu/main.cpp:1`):** `screen.scanline()` executes before `if(vcounter() > 240) { step(hperiod()); return; }`. Rendering cycles are present through V=240 inclusive. `cycleRenderPixel()` runs at H=58+4x for x=0–255 (render cycles: `bsnes/sfc/ppu/main.cpp:181`).
 
-**SOURCE OBSERVATION — [Screen::run][run]:** V=0 returns before either store. Otherwise two chained assignments write sample 0 and sample 1 through lineB and lineA. Under the tested C++17 language mode, each assignment chain stores B before A. No native bound check suppresses them.
+**SOURCE OBSERVATION — Screen::run (`bsnes/sfc/ppu/screen.cpp:21`):** V=0 returns before either store. Otherwise two chained assignments write sample 0 and sample 1 through lineB and lineA. Under the tested C++17 language mode, each assignment chain stores B before A. No native bound check suppresses them.
 
-**SOURCE OBSERVATION — [below][below] and [above][above]:** Forced blank, or live `!io.overscan && V >= 225`, makes these functions return zero. It does **not** make `Screen::run()` return. The subsequent light-table lookup and stores still occur. Live overscan and latched placement overscan are distinct.
+**SOURCE OBSERVATION — below (`bsnes/sfc/ppu/screen.cpp:32`) and above (`bsnes/sfc/ppu/screen.cpp:80`):** Forced blank, or live `!io.overscan && V >= 225`, makes these functions return zero. It does **not** make `Screen::run()` return. The subsequent light-table lookup and stores still occur. Live overscan and latched placement overscan are distinct.
 
-**SOURCE OBSERVATION — [overscan clear][main]:** At V=0, when old `display.overscan` is true and new `io.overscan` is false, the loop clears pair rows 1–7 and 232–240 inclusive, each containing 1,024 samples.
+**SOURCE OBSERVATION — overscan clear (`bsnes/sfc/ppu/main.cpp:1`):** At V=0, when old `display.overscan` is true and new `io.overscan` is false, the loop clears pair rows 1–7 and 232–240 inclusive, each containing 1,024 samples.
 
 ## 4. Exact index arithmetic
 
@@ -95,14 +97,14 @@ A one-past pointer can be formed but not dereferenced. Pointer arithmetic beyond
 
 ## 5. Focused test method
 
-**HOST-TEST EVIDENCE:** New isolated test files are under [tests/exp004-p0][tests]:
+**HOST-TEST EVIDENCE:** New isolated test files are under `tests/exp004-p0`:
 
 | File | Purpose |
 |---|---|
-| [output-bounds-test.cpp][fixture] | Integer matrix; actual native Screen methods against defined oversized storage; guard/table effects; supplied-value assertions; extracted native clear condition/loop |
-| [layout-probe.cpp][layout] | Actual native PPU header ABI offsets; creates no PPU and performs no rendering |
-| [run-tests.py][runner] | Baseline pinning, source extraction, builds/runs, independent matrix cross-check, profile/result comparisons and evidence retention |
-| [README.md][readme] | Reproduction and interpretation limits |
+| `tests/exp004-p0/output-bounds-test.cpp:1` | Integer matrix; actual native Screen methods against defined oversized storage; guard/table effects; supplied-value assertions; extracted native clear condition/loop |
+| `tests/exp004-p0/layout-probe.cpp:1` | Actual native PPU header ABI offsets; creates no PPU and performs no rendering |
+| `tests/exp004-p0/run-tests.py:1` | Baseline pinning, source extraction, builds/runs, independent matrix cross-check, profile/result comparisons and evidence retention |
+| `tests/exp004-p0/README.md:1` | Reproduction and interpretation limits |
 | `.gitignore` | Ignores only this test directory's `build/` output |
 
 The guarded fixture changes **test storage**, not native source: `output` is a pointer into one oversized `std::vector<uint16>` array. A table view gives native `lightTable[level][color]` syntax access to another region of the same array. Every executed pointer, load, store and test assertion readback remains within that single real allocation. The logical N-element output boundary is not a smaller C++ array subobject in this model.
@@ -120,13 +122,14 @@ The separate layout probe includes the **unmodified complete native PPU declarat
 
 A second generated **test-only copy** of `Screen::run()` splits each existing lookup/store expression into a typed supplied-value local, the same chained store, and a capture of that local. It does not inspect output memory or record color-math provenance. The original and supplied-value variants are compared at both optimization levels.
 
-Reproduction from the EXP-004 worktree:
+Reproduction from repository root (the Python version recorded above on PATH); `run-03` identifies the recorded run:
 
 ```powershell
-& 'C:/Users/User/miniconda3/python.exe' tests/exp004-p0/run-tests.py run-03
+cd experiments/bsnes-exp-004
+python tests/exp004-p0/run-tests.py run-03
 ```
 
-Use a fresh evidence name when repeating; the runner refuses to reuse an evidence directory. All compiler/executable commands and exit codes are retained in [commands.json][commands]. Representative compile settings are `-std=gnu++17 -Wall -Wextra -Werror -O0` or `-O3`; native Screen parentheses/sign-compare warnings are explicitly suppressed. The layout probe treats upstream headers as system headers and suppresses the conditional-offset warning.
+Use a fresh evidence name when repeating; the runner refuses to reuse an evidence directory. All compiler/executable commands and exit codes are retained in `<OUTPUT_DIR>/run-03/commands.json`. Representative compile settings are `-std=gnu++17 -Wall -Wextra -Werror -O0` or `-O3`; native Screen parentheses/sign-compare warnings are explicitly suppressed. The layout probe treats upstream headers as system headers and suppresses the conditional-offset warning.
 
 **HOST-TEST EVIDENCE:** Final `run-03` exited 0. Initial `run-01` stopped at upstream header warnings under `-Werror`; `run-02` passed O0 fixtures but stopped at an O3 nall string-formatting warning. The final fixture prints SHA bytes directly, avoiding that formatting helper; no native code was changed or warning-repair patch applied. Those attempt logs remain local.
 
@@ -146,7 +149,7 @@ Use a fresh evidence name when repeating; the runner refuses to reuse an evidenc
 
 These four executables produced identical matrix/store/layout-effects CSVs and runtime signatures. Each fixture comparison also checks the whole backing array against the expected sequence of actual lookup-return values, so unplanned physical writes within the allocated model are detected.
 
-The [compact machine-readable matrix](C:/Users/User/Documents/GTC-HD-Lab/docs/experiments/EXP-004/P0_OUTPUT_BOUNDS_MATRIX.csv) includes V, latched overscan, interlace, field, pairY, A/B bases and their classifications, horizontal offset range, nominal maximum, attempted-store maximum, declared size, native-store gating and in/out result. A `no_store` row can still contain invalid native pointer arithmetic; it is not a declaration that the native pointer construction is valid.
+The [compact machine-readable matrix](P0_OUTPUT_BOUNDS_MATRIX.csv) includes V, latched overscan, interlace, field, pairY, A/B bases and their classifications, horizontal offset range, nominal maximum, attempted-store maximum, declared size, native-store gating and in/out result. A `no_store` row can still contain invalid native pointer arithmetic; it is not a declaration that the native pointer construction is valid.
 
 Matrix SHA-256:
 
@@ -278,7 +281,7 @@ Final runtime signature, equal across all four fixture builds:
 4779f27c6ad70a0d8c5ff8967af7759c0fcf908f9787c8a1e856ec18b52517b5
 ```
 
-The [local summary][summary], [command log][commands], [store matrix][stores-csv] and [layout-effects CSV][effects] retain the execution evidence. They are host-fixture artifacts, not ROM framebuffer hashes.
+The retained summary (`<OUTPUT_DIR>/run-03/summary.json`), command log (`<OUTPUT_DIR>/run-03/commands.json`), store matrix (`<OUTPUT_DIR>/run-03/O0-native-stores.csv`) and layout-effects CSV (`<OUTPUT_DIR>/run-03/O0-native-layout-effects.csv`) retain the execution evidence. They are host-fixture artifacts, not ROM framebuffer hashes.
 
 ## 12. Implications for EXP-004 instrumentation
 
@@ -355,24 +358,6 @@ Files added by this task:
 - `docs/experiments/EXP-004/P0_OUTPUT_BOUNDS_REPORT.md`.
 - `docs/experiments/EXP-004/P0_OUTPUT_BOUNDS_MATRIX.csv`.
 - The five isolated test files listed in section 5.
-- Ignored generated test copies, executables, CSVs and logs under `tests/exp004-p0/build/`.
+- Ignored generated test copies, executables, CSVs and logs under `<OUTPUT_DIR>/`.
 
 **SOURCE OBSERVATION / HOST-TEST EVIDENCE:** No tracked experimental/native file was modified. The normal desktop build does not include these new test files. The worktree remains behaviorally unmodified outside standalone test instrumentation. The frozen HEAD is unchanged; no commits, native repairs, ROM execution or EXP-004 implementation occurred.
-
-[ppu-h]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/ppu.hpp:59
-[refresh]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/ppu.cpp:192
-[screen]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/screen.cpp:1
-[run]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/screen.cpp:21
-[below]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/screen.cpp:32
-[above]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/screen.cpp:80
-[main]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/main.cpp:1
-[cycles]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/bsnes/sfc/ppu/main.cpp:181
-[tests]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/tests/exp004-p0
-[fixture]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/tests/exp004-p0/output-bounds-test.cpp:1
-[layout]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/tests/exp004-p0/layout-probe.cpp:1
-[runner]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/tests/exp004-p0/run-tests.py:1
-[readme]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/tests/exp004-p0/README.md:1
-[commands]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/tests/exp004-p0/build/run-03/commands.json
-[summary]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/tests/exp004-p0/build/run-03/summary.json
-[stores-csv]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/tests/exp004-p0/build/run-03/O0-native-stores.csv
-[effects]: C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-004/tests/exp004-p0/build/run-03/O0-native-layout-effects.csv

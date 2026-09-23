@@ -19,8 +19,8 @@ For compact repeated citations, `ppu/` expands to `bsnes/sfc/ppu/`, `fast/` to `
 
 | Item | Observed value |
 |---|---|
-| GTC-HD workspace root | `C:/Users/User/Documents/GTC-HD-Lab` |
-| Research repository root | `C:/Users/User/Documents/GTC-HD-Lab/upstream/bsnes` |
+| GTC-HD workspace root | `<GTC-HD-Lab>` |
+| Research repository root | `upstream/bsnes` |
 | Separate repository | Yes; its own `.git` directory and matching `git rev-parse --show-toplevel` |
 | Origin | `https://github.com/bsnes-emu/bsnes.git` |
 | Current branch | `master` |

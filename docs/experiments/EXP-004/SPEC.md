@@ -323,7 +323,7 @@ Do not discard a known numeric native result merely because its semantic lineage
 Registered experimental worktree:
 
 ```text
-C:\Users\User\Documents\GTC-HD-Lab\experiments\bsnes-exp-004
+experiments/bsnes-exp-004/
 ```
 
 Branch: `gtc-hd/exp-004-color-math-provenance`

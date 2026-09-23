@@ -12,7 +12,7 @@ The observer and its host-only tests are implemented. The standalone observer co
 
 ## 1. Authority, repository, and working-tree identity
 
-Workspace root: `C:/Users/User/Documents/GTC-HD-Lab`.
+Workspace root: `<GTC-HD-Lab>`.
 
 The task's AGENTS.md, project state, architecture audit, and experiment specification were read before implementation. The requested specification path, `project/experiments/EXP-001_PASSIVE_PPU_OBSERVATION.md`, does not exist. The existing specification was found and read at `project/expies/EXP-001_PASSIVE_PPU_OBSERVATION.md`; it has not been moved or edited. This report uses the requested results location.
 
@@ -46,7 +46,7 @@ Paths in this table are relative to the experiment worktree.
 
 GTC-HD-Lab changes: new `project/experiments/EXP-001_RESULTS.md` and a one-line correction to root `.gitignore`. The existing unanchored `experiments/` pattern also ignored this report's directory; changing it to `/experiments/` keeps root experimental checkouts ignored while exposing project experiment documentation for review. No other ignore rule was changed.
 
-Local generated files, all under the ignored `experiments/bsnes-exp-001/tests/exp001/build/` directory: `observer-test.exe`, `observer-test.obj`, `exp001-observer.obj`, `observer-test.csv`, `observer-msvc.log`, `ppu-msvc.log`, and `baseline-ppu-msvc.log`. The CSV contains **synthetic host-test records**, not captured SNES activity. Failed PPU compilation produced no PPU object or desktop executable.
+Local generated files, all under the ignored `<OUTPUT_DIR>/` directory: `observer-test.exe`, `observer-test.obj`, `exp001-observer.obj`, `observer-test.csv`, `observer-msvc.log`, `ppu-msvc.log`, and `baseline-ppu-msvc.log`. The CSV contains **synthetic host-test records**, not captured SNES activity. Failed PPU compilation produced no PPU object or desktop executable.
 
 ### Uncommitted source fingerprint
 
@@ -170,7 +170,7 @@ The checked-out `.github/workflows/build.yml` invokes:
 make -j4 -C bsnes local=false
 ```
 
-Working directory: `C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-001`.
+Working directory: `experiments/bsnes-exp-001/`.
 
 `bsnes/GNUmakefile` selects the desktop `target=bsnes`, `binary=application`, `build=performance`, and OpenMP by default. `local=false` removes the default `-march=native`. For Windows, `nall/GNUmakefile` selects GNU `g++`, GNU C++17, Windows/MinGW libraries, and `windres`; the performance profile uses `-O3`. A debugger build can use `make -j4 -C bsnes local=false build=debug` once the supported toolchain is present.
 
@@ -178,13 +178,14 @@ Working directory: `C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-001
 
 ### Strongest available build validation
 
-Visual Studio's existing **MSVC 19.50.35728 x64** compiler was available through its developer environment. The standalone observer was compiled and linked with its tests under C++17, warnings-as-errors, disabled optimization, and runtime checks.
+Visual Studio 18 Community's existing **MSVC 19.50.35728 x64** compiler was available through its developer environment. The standalone observer was compiled and linked with its tests under C++17, warnings-as-errors, disabled optimization, and runtime checks.
 
-Commands below are `cmd.exe` syntax, executed in `experiments/bsnes-exp-001/tests/exp001/build` through PowerShell's `ComSpec`. Compiler output was captured in `observer-msvc.log`.
+Commands below use `cmd.exe` syntax through PowerShell's `ComSpec`, with machine-local paths normalized. `<GTC-HD-Lab>` is the repository root, `<OUTPUT_DIR>` is the ignored evidence directory used for that run, and `<VCVARS64_BAT>` is the Visual Studio 18 Community x64 environment script. Replace placeholders before invocation. Compiler output was captured in `observer-msvc.log`.
 
 ```bat
-call "C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat"
-cl /std:c++17 /EHsc /W4 /WX /Od /RTC1 /Fe:observer-test.exe /Fd:observer-test.pdb ../observer-test.cpp ../../../bsnes/sfc/ppu/exp001-observer.cpp
+call "<VCVARS64_BAT>"
+cd /d "<OUTPUT_DIR>"
+cl /std:c++17 /EHsc /W4 /WX /Od /RTC1 /Fe:observer-test.exe /Fd:observer-test.pdb "<GTC-HD-Lab>/experiments/bsnes-exp-001/tests/exp001/observer-test.cpp" "<GTC-HD-Lab>/experiments/bsnes-exp-001/bsnes/sfc/ppu/exp001-observer.cpp"
 observer-test.exe observer-test.csv
 ```
 
@@ -198,13 +199,13 @@ record_bytes=48 capacity=32768
 A direct native PPU translation-unit probe was also attempted with MSVC:
 
 ```bat
-cl /nologo /std:c++17 /EHsc /c /I../../../bsnes /I../../.. /Fo:ppu-msvc.obj ../../../bsnes/sfc/ppu/ppu.cpp
+cl /nologo /std:c++17 /EHsc /c /I"<GTC-HD-Lab>/experiments/bsnes-exp-001/bsnes" /I"<GTC-HD-Lab>/experiments/bsnes-exp-001" /Fo:ppu-msvc.obj "<GTC-HD-Lab>/experiments/bsnes-exp-001/bsnes/sfc/ppu/ppu.cpp"
 ```
 
 It exited 2 in pre-existing headers before the observer integration could be type-checked. A matching read-only probe of the pristine source used absolute include/source paths and `/Fo:baseline-ppu-msvc.obj` in the experiment's build directory:
 
 ```bat
-cl /nologo /std:c++17 /EHsc /c /IC:/Users/User/Documents/GTC-HD-Lab/upstream/bsnes/bsnes /IC:/Users/User/Documents/GTC-HD-Lab/upstream/bsnes /Fo:baseline-ppu-msvc.obj C:/Users/User/Documents/GTC-HD-Lab/upstream/bsnes/bsnes/sfc/ppu/ppu.cpp
+cl /nologo /std:c++17 /EHsc /c /I"<GTC-HD-Lab>/upstream/bsnes/bsnes" /I"<GTC-HD-Lab>/upstream/bsnes" /Fo:baseline-ppu-msvc.obj "<GTC-HD-Lab>/upstream/bsnes/bsnes/sfc/ppu/ppu.cpp"
 ```
 
 That probe also exited 2. After removing path prefixes, the 75 diagnostic codes/messages match in sequence: **62 errors, 12 warnings, 1 fatal error**. The existing incompatibilities include GCC `__attribute__` declarations and zero-sized arrays in SameBoy headers, eleven unknown-GCC-pragma warnings, one `interface` macro-redefinition warning, and fatal missing `utime.h` in `nall/platform.hpp`. Complete outputs are preserved in `ppu-msvc.log` and `baseline-ppu-msvc.log`.
@@ -309,13 +310,13 @@ Read before this change: `AGENTS.md`, `docs/PROJECT_STATE.md`, `docs/experiments
 
 | Worktree | Branch | HEAD at start and completion |
 | --- | --- | --- |
-| Writable: `experiments/bsnes-exp-001` | `gtc-hd/exp-001-passive-ppu-observation` | `2e0eeaa1580487f277e60f6ef55b9c74ca1026ae` |
-| Read-only harness baseline: `experiments/bsnes-exp-001-baseline` | `gtc-hd/exp-001-runtime-harness` | `906f74b6e5f4f2f4e62bb960d01aa68c9f55f919` |
+| Writable: `experiments/bsnes-exp-001/` | `gtc-hd/exp-001-passive-ppu-observation` | `2e0eeaa1580487f277e60f6ef55b9c74ca1026ae` |
+| Read-only harness baseline: `experiments/bsnes-exp-001-baseline/` | `gtc-hd/exp-001-runtime-harness` | `906f74b6e5f4f2f4e62bb960d01aa68c9f55f919` |
 | Read-only audited source: `upstream/bsnes` | `master` | `7d5aa1e656b9171524d01b1b22917197d8121cb4` |
 
 All three worktrees and GTC-HD-Lab were clean at the beginning. The writable branch descends from the audited baseline. Only the observer worktree and this results document were changed. Both read-only worktrees remain clean; canonical project state, instructions, specification, and runtime-harness report remain unchanged. Nothing was committed or staged.
 
-Durable source changes, relative to `experiments/bsnes-exp-001`:
+Durable source changes, relative to `experiments/bsnes-exp-001/`:
 
 | File | Change |
 | --- | --- |
@@ -410,7 +411,7 @@ Check **both** the frame-hash footer/process exit and the complete observer summ
 
 ### 12.5 Build and focused tests actually performed
 
-Supported environment: existing MSYS2 UCRT64 at `C:/msys64`; **g++ 16.2.0 (Rev3, Built by MSYS2 project)**. No toolchain or ROM was installed/downloaded.
+Supported environment: existing MSYS2 UCRT64; **g++ 16.2.0 (Rev3, Built by MSYS2 project)**. No toolchain or ROM was installed/downloaded.
 
 From the observer worktree in UCRT64:
 
@@ -423,27 +424,27 @@ make -j4 -C bsnes local=false
 
 The first sandbox shell attempt failed before compilation because the MSYS login setup/GCC temporary directory was outside writable locations. The successful build used a non-login MSYS bash and set `TMPDIR` to the ignored worktree test build directory. No global Git configuration or toolchain repair was needed.
 
-Built executable: `experiments/bsnes-exp-001/bsnes/out/bsnes.exe`
+Built executable: `<BSNES_EXE>`
 
 Size: **9,729,667 bytes**
 
 SHA-256: `0DEB112ECC1DDD44667A4355C68D00C6F54B84FCE19B0367ABCB750D440BC9FA`
 
-Focused test commands, from the observer worktree in UCRT64 (create the ignored build directory and use fresh prefixes):
+Focused test command templates, from the observer worktree in UCRT64 (create `<OUTPUT_DIR>`, replace placeholders, and use fresh prefixes). `<BSNES_EXE>` denotes the desktop executable identified above:
 
 ```sh
 g++ -std=gnu++17 -O0 -g -Wall -Wextra -Werror -isystem . \
   tests/exp001-runtime/observer-window-test.cpp bsnes/sfc/ppu/exp001-observer.cpp \
-  -o tests/exp001-runtime/build/observer-window-test.exe
-tests/exp001-runtime/build/observer-window-test.exe tests/exp001-runtime/build/window-run-1
+  -o "<OUTPUT_DIR>/observer-window-test.exe"
+"<OUTPUT_DIR>/observer-window-test.exe" "<OUTPUT_DIR>/window-run-1"
 
 g++ -std=gnu++17 -O0 -g -Wall -Wextra -Werror -isystem . \
   tests/exp001-runtime/frame-hash-test.cpp \
-  -o tests/exp001-runtime/build/frame-hash-regression.exe
-tests/exp001-runtime/build/frame-hash-regression.exe tests/exp001-runtime/build/window-hash-regression-1
+  -o "<OUTPUT_DIR>/frame-hash-regression.exe"
+"<OUTPUT_DIR>/frame-hash-regression.exe" "<OUTPUT_DIR>/window-hash-regression-1"
 
 python tests/exp001-runtime/observer-window-cli-test.py \
-  bsnes/out/bsnes.exe tests/exp001-runtime/build/window-cli-1
+  "<BSNES_EXE>" "<OUTPUT_DIR>/window-cli-1"
 ```
 
 Both C++ test builds passed with **no warnings**, assertions enabled. Both executables and the Python CLI test exited 0.
@@ -465,17 +466,17 @@ Both C++ test builds passed with **no warnings**, assertions enabled. Both execu
 
 The 600-callback tests above use small synthetic pixel arrays and synthetic observer events. They are **not** 600 emulated SNES frames, do not establish the native window's PPU provenance, and do not supersede the user's required B2/C ROM runs. No runtime state comparison, native C record-count measurement, or performance measurement was performed here.
 
-Evidence is retained under `tests/exp001-runtime/build/`: `observer-window-desktop-build.log`, `observer-window-compiler.txt`, `observer-window-test-build.log`, `observer-window-test-run.log`, `window-hash-regression-build.log`, `window-hash-regression-run.log`, synthetic `window-run-1-*`/`window-hash-regression-1-*` files, and `window-cli-1/results.json` with per-case stderr/stdout. The existing hiro destructor wrote a window-metrics cache under `window-cli-1/hiro/windows.bml`, inside the ignored evidence directory; normal bsnes settings were not initialized by those rejected invocations.
+Evidence is retained under `<OUTPUT_DIR>/`: `observer-window-desktop-build.log`, `observer-window-compiler.txt`, `observer-window-test-build.log`, `observer-window-test-run.log`, `window-hash-regression-build.log`, `window-hash-regression-run.log`, synthetic `window-run-1-*`/`window-hash-regression-1-*` files, and `window-cli-1/results.json` with per-case stderr/stdout. The existing hiro destructor wrote a window-metrics cache under `window-cli-1/hiro/windows.bml`, inside the ignored evidence directory; normal bsnes settings were not initialized by those rejected invocations.
 
 ### 12.6 Exact recommended B2 and C command templates
 
-Run from **MSYS2 UCRT64**, using the newly built observer executable for both runs. Supply the same authorized ROM and deterministic starting settings/persistent memory used for A1/A2/B. Restore equivalent starting conditions before each run because the normal frontend can save settings/game memory. Use distinct, new output paths with existing parent directories. No ROM path was supplied to this implementation task, so these commands were not executed here.
+Run each template from the GTC-HD repository root in **MSYS2 UCRT64**, using the newly built observer executable (`<BSNES_EXE>`) for both runs. Replace all placeholders before invocation. Supply the same authorized ROM and deterministic starting settings/persistent memory used for A1/A2/B. Restore equivalent starting conditions before each run because the normal frontend can save settings/game memory. Use distinct, new output paths with existing parent directories. No ROM path was supplied to this implementation task, so these commands were not executed here.
 
 B2 — observer disabled, 600 native callbacks:
 
 ```sh
-cd /c/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-001
-./bsnes/out/bsnes.exe --settings="<SETTINGS_PATH>" \
+cd experiments/bsnes-exp-001
+"<BSNES_EXE>" --settings="<SETTINGS_PATH>" \
   --exp001-frame-hash="<OUTPUT_DIR>/B2-600-frames.csv" \
   --exp001-frame-count=600 "<AUTHORIZED_ROM_PATH>"
 echo "B2 exit: $?"
@@ -484,8 +485,8 @@ echo "B2 exit: $?"
 C — the same executable, observe the interval producing callback 500 only:
 
 ```sh
-cd /c/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-001
-./bsnes/out/bsnes.exe --settings="<SETTINGS_PATH>" \
+cd experiments/bsnes-exp-001
+"<BSNES_EXE>" --settings="<SETTINGS_PATH>" \
   --exp001-frame-hash="<OUTPUT_DIR>/C-600-frames.csv" \
   --exp001-frame-count=600 \
   --exp001-observer-csv="<OUTPUT_DIR>/C-callback-500-provenance.csv" \

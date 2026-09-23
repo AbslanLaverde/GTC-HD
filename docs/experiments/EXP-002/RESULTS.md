@@ -8,16 +8,16 @@ Date: September 20, 2026.
 
 Can a native cycle-PPU OBJ candidate retain its originating OAM object and fetched tile lineage while the original OBJ implementation remains authoritative?
 
-The workspace is `C:/Users/User/Documents/GTC-HD-Lab`. Project authority remains under `docs/`. Root `AGENTS.md`, `docs/PROJECT_STATE.md`, `docs/research/BSNES_ARCHITECTURE_AUDIT.md`, and `docs/experiments/EXP-002/SPEC.md` were read before implementation. Older `project/` references in historical reports do not override that authority. The project remains Phase 0; bsnes and the interception boundary remain **INVESTIGATING**.
+The workspace is `<GTC-HD-Lab>`. Project authority remains under `docs/`. Root `AGENTS.md`, `docs/PROJECT_STATE.md`, `docs/research/BSNES_ARCHITECTURE_AUDIT.md`, and `docs/experiments/EXP-002/SPEC.md` were read before implementation. Older `project/` references in historical reports do not override that authority. The project remains Phase 0; bsnes and the interception boundary remain **INVESTIGATING**.
 
 | Source checkout | Branch | Exact HEAD, unchanged by this task |
 |---|---|---|
-| Writable `experiments/bsnes-exp-002` | `gtc-hd/exp-002-obj-provenance` | `906f74b6e5f4f2f4e62bb960d01aa68c9f55f919` |
+| Writable `experiments/bsnes-exp-002/` | `gtc-hd/exp-002-obj-provenance` | `906f74b6e5f4f2f4e62bb960d01aa68c9f55f919` |
 | Read-only `upstream/bsnes` | `master` | `7d5aa1e656b9171524d01b1b22917197d8121cb4` |
-| Read-only `experiments/bsnes-exp-001` | `gtc-hd/exp-001-passive-ppu-observation` | `ba148bedc74892722de93633ce08190dda406bf7` |
-| Read-only `experiments/bsnes-exp-001-baseline` | `gtc-hd/exp-001-runtime-harness` | `906f74b6e5f4f2f4e62bb960d01aa68c9f55f919` |
+| Read-only `experiments/bsnes-exp-001/` | `gtc-hd/exp-001-passive-ppu-observation` | `ba148bedc74892722de93633ce08190dda406bf7` |
+| Read-only `experiments/bsnes-exp-001-baseline/` | `gtc-hd/exp-001-runtime-harness` | `906f74b6e5f4f2f4e62bb960d01aa68c9f55f919` |
 
-The EXP-002 Git root is `C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-002`. It is a linked worktree, with administrative directory `upstream/bsnes/.git/worktrees/bsnes-exp-002` and common directory `upstream/bsnes/.git`. It started clean at the required runtime-harness commit. Source changes remain uncommitted and unstaged on that branch; HEAD still equals the starting commit. Its pre-existing harness has no BG observer. The other three source checkouts were only inspected. Canonical project state, instructions, and specifications are unchanged.
+The EXP-002 Git root is `experiments/bsnes-exp-002/`. It is a linked worktree, with administrative directory `upstream/bsnes/.git/worktrees/bsnes-exp-002` and common directory `upstream/bsnes/.git`. It started clean at the required runtime-harness commit. Source changes remain uncommitted and unstaged on that branch; HEAD still equals the starting commit. Its pre-existing harness has no BG observer. The other three source checkouts were only inspected. Canonical project state, instructions, and specifications are unchanged.
 
 Evidence labels: **SOURCE OBSERVATION** means inspected code; **HOST TEST** means synthetic host execution with the limits below; **INFERENCE** means an implication not established through ROM execution; **UNKNOWN** means still untested. All source paths in this report are relative to the EXP-002 repository unless prefixed with `docs/` or another workspace directory.
 
@@ -149,21 +149,21 @@ Overflow/unknown-source results can finish the native hash sequence but exit non
 
 ## 7. Build and tests actually performed
 
-Toolchain: existing **MSYS2 UCRT64**, `C:/msys64/ucrt64/bin/g++.exe`, **g++ 16.2.0 (Rev3, Built by MSYS2 project)**. No tools or dependencies were installed. A complete desktop build from this checkout and subsequent incremental rebuilds succeeded with exit **0**.
+Toolchain: existing **MSYS2 UCRT64**, **g++ 16.2.0 (Rev3, Built by MSYS2 project)**. No tools or dependencies were installed. A complete desktop build from this checkout and subsequent incremental rebuilds succeeded with exit **0**.
 
-From `experiments/bsnes-exp-002` in a non-login UCRT64 shell:
+From `experiments/bsnes-exp-002/` in a non-login UCRT64 shell (replace `<OUTPUT_DIR>` with the absolute generated evidence directory; `<BSNES_EXE>` below denotes the built desktop executable):
 
 ```sh
 export PATH=/ucrt64/bin:/usr/bin:$PATH
-mkdir -p tests/exp002/build
-export TMPDIR="$PWD/tests/exp002/build"
+mkdir -p "<OUTPUT_DIR>"
+export TMPDIR="<OUTPUT_DIR>"
 make -j4 -C bsnes local=false
 python tests/exp002/run-tests.py validation-final
 ```
 
 The desktop build retains upstream performance/O3, C++17, OpenMP and `local=false` settings. The full build emitted **77 warnings in unchanged upstream code** (BML casts, Game Boy visibility attributes, and an existing Game Boy overflow warning). The final incremental PPU build emitted one existing BML cast warning. **Zero warnings were attributable to EXP-002 source.** The final focused tests build with `-Wall -Wextra -Werror`; the native OBJ fixture explicitly suppresses existing upstream parenthesis, unused-variable, and signed-comparison diagnostics. The added observer/window code has no such suppressions.
 
-Executable: `experiments/bsnes-exp-002/bsnes/out/bsnes.exe`, **9,740,170 bytes**.
+Executable: `<BSNES_EXE>`, **9,740,170 bytes**.
 
 SHA-256: `9817AE51988FCF85B50642DEA82498E142D68734981E183F42F5E22CEA5FBBB0`.
 
@@ -181,7 +181,7 @@ SHA-256: `9817AE51988FCF85B50642DEA82498E142D68734981E183F42F5E22CEA5FBBB0`.
 
 The OBJ fixture compiles actual OBJ/OAM methods with a small substitute PPU timing/memory host, not a full CPU/PPU execution. It extracts the native `Object::serialize()` body verbatim for comparison. Native serialized-state signature for its overlap scenario is `4e5d2fad085fe9c09ce91e1ae01174f77b5b171d406f2c3cfc775d2a9af97364`. This is **not** a framebuffer, ROM, or complete emulator-state digest.
 
-Logs, executables, synthetic CSVs and CLI evidence remain ignored under `tests/exp002/build/`, including `desktop-build.log`, `desktop-final-build.log`, and `validation-final/`. The test runner requires a fresh evidence directory name. No raw artifacts are added to project documentation or committed.
+Logs, executables, synthetic CSVs and CLI evidence remain ignored under `<OUTPUT_DIR>/`, including `desktop-build.log`, `desktop-final-build.log`, and `validation-final/`. The test runner requires a fresh evidence directory name. No raw artifacts are added to project documentation or committed.
 
 ## 8. Architectural learning, product relevance, and limits
 
@@ -199,13 +199,13 @@ A **native OBJ winner is not final framebuffer visibility**. The record is captu
 
 ## 9. Recommended next validation and exact command templates
 
-The next step is user-run deterministic A/B/C ROM validation. A is the harness-only executable at baseline `906f74b6e`; B and C must use the same EXP-002 executable identified above. Restore identical settings seed, SRAM seed, ROM, and input conditions before each run. Record their hashes privately as reproducibility metadata; do not commit ROM/SRAM contents. Use a fresh output filename for every run.
+The next step is user-run deterministic A/B/C ROM validation. A is the harness-only executable at baseline `906f74b6e`; B and C must use the same EXP-002 executable identified above. Restore identical settings seed, SRAM seed, ROM, and input conditions before each run. Record their hashes privately as reproducibility metadata; do not commit ROM/SRAM contents. Use a fresh output filename for every run. Run each template below from the GTC-HD repository root and replace all placeholders before invocation.
 
 B — observer disabled, 600 native callbacks:
 
 ```sh
-cd /c/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-002
-./bsnes/out/bsnes.exe --settings="<SETTINGS_PATH>" \
+cd experiments/bsnes-exp-002
+"<BSNES_EXE>" --settings="<SETTINGS_PATH>" \
   --exp001-frame-hash="<OUTPUT_DIR>/EXP002-B-600-frames.csv" \
   --exp001-frame-count=600 "<AUTHORIZED_ROM_PATH>"
 echo "B exit: $?"
@@ -214,8 +214,8 @@ echo "B exit: $?"
 C — same executable, observe only the interval producing callback 500:
 
 ```sh
-cd /c/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-002
-./bsnes/out/bsnes.exe --settings="<SETTINGS_PATH>" \
+cd experiments/bsnes-exp-002
+"<BSNES_EXE>" --settings="<SETTINGS_PATH>" \
   --exp001-frame-hash="<OUTPUT_DIR>/EXP002-C-600-frames.csv" \
   --exp001-frame-count=600 \
   --exp002-obj-csv="<OUTPUT_DIR>/EXP002-C-callback-500-obj.csv" \

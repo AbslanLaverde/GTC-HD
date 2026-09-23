@@ -130,6 +130,17 @@ Research and experiment reports should normally include:
 * experiments still required;
 * recommended next research step.
 
+### Public Documentation Portability
+
+Tracked GTC-HD documentation is written for public repository visitors browsing or cloning the repository.
+
+- Use repository-relative or source-relative references. Link only to tracked repository files or public resources; identify external checkout source with textual paths and its branch/commit.
+- Do not include personal absolute filesystem paths or expose ignored/private input, configuration, capture, build or output locations.
+- Use placeholders such as `<GTC-HD-Lab>`, `<ROM_PATH>`, `<OUTPUT_DIR>` and `<PYTHON>` when machine-specific values are unavoidable.
+- Retain hashes, tool/compiler versions, commit SHAs, branches, commands and other reproducibility evidence; portability cleanup must not change historical findings or statuses.
+- Normalize local source paths returned by research tools before committing documentation.
+- Apply this rule to future specifications, results, research reports, session handoffs and README changes.
+
 ## Accuracy Priority
 
 GTC-HD prioritizes:

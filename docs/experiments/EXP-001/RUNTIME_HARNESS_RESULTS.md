@@ -8,15 +8,15 @@
 
 ## Repository and authority
 
-Workspace: `C:/Users/User/Documents/GTC-HD-Lab`.
+Workspace: `<GTC-HD-Lab>`.
 
 | Repository | Branch | HEAD at start and completion |
 | --- | --- | --- |
-| Writable: `experiments/bsnes-exp-001-baseline` | `gtc-hd/exp-001-runtime-harness` | `7d5aa1e656b9171524d01b1b22917197d8121cb4` |
-| Read-only: `experiments/bsnes-exp-001` | `gtc-hd/exp-001-passive-ppu-observation` | `0f946d112f045d5cf29a9e09876b15a592180b62` |
+| Writable: `experiments/bsnes-exp-001-baseline/` | `gtc-hd/exp-001-runtime-harness` | `7d5aa1e656b9171524d01b1b22917197d8121cb4` |
+| Read-only: `experiments/bsnes-exp-001/` | `gtc-hd/exp-001-passive-ppu-observation` | `0f946d112f045d5cf29a9e09876b15a592180b62` |
 | Read-only: `upstream/bsnes` | `master` | `7d5aa1e656b9171524d01b1b22917197d8121cb4` |
 
-The writable repository root is `C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-001-baseline`. It is a linked Git worktree using `upstream/bsnes/.git/worktrees/bsnes-exp-001-baseline` and the shared Git directory `upstream/bsnes/.git`. Normal Git commands work; its pointers use Windows-compatible paths. All three source worktrees were clean before implementation. The baseline ancestry check passed. No commits, branch changes, merges, or worktree-metadata repairs were made.
+The writable repository root is `experiments/bsnes-exp-001-baseline/`. It is a linked Git worktree using `upstream/bsnes/.git/worktrees/bsnes-exp-001-baseline` and the shared Git directory `upstream/bsnes/.git`. Normal Git commands work; its pointers use Windows-compatible paths. All three source worktrees were clean before implementation. The baseline ancestry check passed. No commits, branch changes, merges, or worktree-metadata repairs were made.
 
 Read before editing: root `AGENTS.md`, `project/GTC-HD_PROJECT_STATE.md`, the EXP-001 specification, and `project/experiments/EXP-001_RESULTS.md`. The specification exists at `project/expies/EXP-001_PASSIVE_PPU_OBSERVATION.md`; the requested `project/experiments/EXP-001_PASSIVE_PPU_OBSERVATION.md` is absent. The existing specification was read without moving or changing it. The older results report describes an earlier toolchain state; it was not rewritten.
 
@@ -126,14 +126,14 @@ Source evidence for these requirements is in `program/game.cpp`, `program/progra
 Exact 120-callback command template, from the writable repository in **MSYS2 UCRT64**, after preparing a dedicated `<SETTINGS_PATH>` with the conditions above:
 
 ```sh
-./bsnes/out/bsnes.exe --settings="<SETTINGS_PATH>" --exp001-frame-hash="<OUTPUT_PATH>" --exp001-frame-count=120 "<ROM_PATH>"
+"<BSNES_EXE>" --settings="<SETTINGS_PATH>" --exp001-frame-hash="<OUTPUT_PATH>" --exp001-frame-count=120 "<ROM_PATH>"
 ```
 
 Use an existing authorized `<ROM_PATH>`, a new `<OUTPUT_PATH>`, and quote paths containing spaces. This command was not run with a ROM in this task. The application remains the normal desktop frontend; this is not a headless emulator target.
 
 ## Build environment and measured results
 
-Supported environment: **MSYS2 UCRT64**, installed at `C:/msys64`. Compiler executable: `C:/msys64/ucrt64/bin/g++.exe`; make executable: `C:/msys64/usr/bin/make.exe`.
+Supported environment: **MSYS2 UCRT64**, with `g++` and GNU `make` on PATH.
 
 Actual `g++ --version` output:
 
@@ -144,7 +144,7 @@ This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ```
 
-Build working directory: `C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-001-baseline`.
+Build working directory: `experiments/bsnes-exp-001-baseline/`.
 
 ```sh
 export PATH=/ucrt64/bin:/usr/bin:$PATH
@@ -155,19 +155,19 @@ make -j4 -C bsnes local=false
 
 The complete build emitted **77 warnings in unchanged upstream code**: 27 `-Wcast-user-defined` diagnostics in `nall/string/markup/bml.hpp`, 49 unsupported visibility-attribute diagnostics in Game Boy core code, and one `-Woverflow` diagnostic at `gb/Core/save_state.c:1531`. The final incremental build repeated one BML diagnostic. **No full-build diagnostics point to the added harness code.** No warning fixes or compiler workarounds were made to upstream sources. An initial shell launch lacked make on PATH and exited 127 before compilation; setting the UCRT64/MSYS paths as above resolved it.
 
-Executable: `C:/Users/User/Documents/GTC-HD-Lab/experiments/bsnes-exp-001-baseline/bsnes/out/bsnes.exe`  
+Executable: `<BSNES_EXE>` (the built desktop executable; private output location omitted)\
 Size: **7,082,253 bytes**  
 Final executable SHA-256: `77c88b940b132e030d8e9a809f807422dd123572509f464483b2ebea153d50b9`
 
-Local generated evidence is under `tests/exp001-runtime/build/` (ignored): `desktop-build.log`, `desktop-final-build.log`, `compiler-version.txt`, `test-build.log`, `test-run.log`, `cli-results.json`, per-case CLI stderr/stdout logs, the test executable, and synthetic CSV files. The desktop executable and object/dependency files are covered by existing bsnes ignore rules. The existing destructor in `hiro/windows/settings.cpp` generated `hiro/windows.bml` during CLI exit; this new 171-byte window-metrics cache was moved into the ignored evidence directory as `cli-windows.bml` so it is not left among source changes.
+Generated evidence is under `<OUTPUT_DIR>/` (an ignored directory whose private location is omitted): `desktop-build.log`, `desktop-final-build.log`, `compiler-version.txt`, `test-build.log`, `test-run.log`, `cli-results.json`, per-case CLI stderr/stdout logs, the test executable, and synthetic CSV files. The desktop executable and object/dependency files are covered by existing bsnes ignore rules. The existing destructor in `hiro/windows/settings.cpp` generated `hiro/windows.bml` during CLI exit; this new 171-byte window-metrics cache was moved into the ignored evidence directory as `cli-windows.bml` so it is not left among source changes.
 
 ## Tests actually performed
 
-Standalone host-test build and run, from the writable repository in UCRT64:
+Standalone host-test command templates, from `experiments/bsnes-exp-001-baseline/` in UCRT64; replace `<OUTPUT_DIR>` with the generated evidence directory:
 
 ```sh
-g++ -std=gnu++17 -O0 -g -Wall -Wextra -Werror -isystem . tests/exp001-runtime/frame-hash-test.cpp -o tests/exp001-runtime/build/frame-hash-test.exe
-tests/exp001-runtime/build/frame-hash-test.exe tests/exp001-runtime/build/run-1
+g++ -std=gnu++17 -O0 -g -Wall -Wextra -Werror -isystem . tests/exp001-runtime/frame-hash-test.cpp -o "<OUTPUT_DIR>/frame-hash-test.exe"
+"<OUTPUT_DIR>/frame-hash-test.exe" "<OUTPUT_DIR>/run-1"
 ```
 
 Create the ignored build directory first. Use a fresh output prefix on reruns because captures use exclusive creation. Assertions were enabled. **Build and test both exited 0; the final test build emitted no warnings.** An exploratory `-O2 -Werror` test compilation reported `-Wmaybe-uninitialized` inside the unchanged nall adaptive string allocator while constructing test paths; the passing focused check used `-O0 -g`, while the actual desktop build still used its normal `-O3` profile.
