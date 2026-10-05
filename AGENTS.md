@@ -471,3 +471,31 @@ For Candidate B runtime:
 Read the prototype comparison before runtime validation:
 
 `docs/research/BSNES_NATIVE_OUTPUT_BOUNDS_PROTOTYPE_COMPARISON.md`
+
+### Accepted Candidate A Revalidation — 2026-10-05
+
+Xavier accepted native source `46fa75236fa61d49d8e9424b3b44694b88aa07a9` as the corrected **experimental research baseline**. This dated disposition supersedes Candidate A's pre-acceptance registration wording above; historical prototype/runtime worktrees remain protected during revalidation. It does not select a final core or authorize EXP-004.
+
+The following isolated worktrees are writable only for the authorized accepted-baseline integration and finite EXP-001/002/003 transfer revalidation:
+
+| Worktree | Expected branch | Purpose |
+| --- | --- | --- |
+| `experiments/bsnes-candidate-a-revalidation-baseline/` | `gtc-hd/candidate-a-revalidation-baseline` | Fresh corrected harness-only build and deterministic control |
+| `experiments/bsnes-exp-001-corrected/` | `gtc-hd/exp-001-corrected-baseline` | Reintegrate and revalidate the established EXP-001 observer |
+| `experiments/bsnes-exp-002-corrected/` | `gtc-hd/exp-002-corrected-baseline` | Reintegrate and revalidate the established EXP-002 observer |
+| `experiments/bsnes-exp-003-corrected/` | `gtc-hd/exp-003-corrected-baseline` | Reintegrate and revalidate the established EXP-003 observer |
+
+Starting harness descendant: `13e19564bd038e3767a58b9f1f1d29b1d5f4f527`. The accepted native correction is its parent `46fa75236fa61d49d8e9424b3b44694b88aa07a9`, not the harness commit. Historical harness: `906f74b6e5f4f2f4e62bb960d01aa68c9f55f919`.
+
+For these checkouts:
+
+- preserve Candidate A storage, pointer safety, native execution and 512x480 presentation;
+- reuse existing observers without redesign or new semantic fields; stop and report unexpected regressions;
+- do not modify upstream, original EXP-001/002/003/004, investigation, prototype or historical runtime worktrees;
+- local commits on these new branches are permitted only after the relevant implementation/tests pass, using Xavier Laverde <xavier0286@gmail.com> as author and committer;
+- do not merge into `master`, rewrite historical/public identities, or push;
+- these are research checkouts, not production GTC-HD source; EXP-004 implementation requires Xavier's explicit reauthorization after successful transfer revalidation.
+
+Read the relevant experiment specification/results and `docs/research/BSNES_NATIVE_OUTPUT_BOUNDS_RUNTIME_VALIDATION.md` before revalidation.
+
+Current revalidation disposition: EXP-001/002/003 are **VERIFIED FOR TESTED CONDITIONS ON ACCEPTED CORRECTED BASELINE** after focused host/source checks, normal-desktop framebuffer/provenance transfers and targeted bounds fixtures passed. EXP-004 is **NATIVE-BASELINE GATE SATISFIED / READY FOR EXPLICIT IMPLEMENTATION REAUTHORIZATION**; source implementation remains unauthorized until Xavier explicitly reauthorizes it. Runtime validation must use the normal desktop execution context; the diagnosed restricted-context Direct3D 9 modal failure is a validation-environment limitation, with exact HRESULT unknown. See `docs/research/BSNES_ACCEPTED_BASELINE_REVALIDATION.md`.

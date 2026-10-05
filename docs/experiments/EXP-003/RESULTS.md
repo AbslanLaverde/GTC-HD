@@ -2,9 +2,12 @@
 
 Date: September 22, 2026.
 
-**Status:** VERIFIED FOR TESTED EXP-003 CONDITIONS  
+**Status:** VERIFIED FOR TESTED CONDITIONS ON ACCEPTED CORRECTED BASELINE
+
+**Corrected-baseline update — 2026-10-05:** the existing integration passed focused host/source checks, normal-desktop disabled/enabled runtime transfer and the targeted bounds fixture. See the [completed transfer addendum](#completed-corrected-baseline-transfer--2026-10-05). Earlier implementation, historical/public mappings and the stopped-transfer addendum below retain their original scope.
+
 **Research target:** bsnes cycle PPU  
-**Implementation commit:** `76bdb9250`  
+**Historical implementation commit:** `76bdb9250`
 **Production architecture impact:** None — experimental evidence only
 
 EXP-003 is complete for its intended Phase-0 research question.
@@ -1131,3 +1134,44 @@ That is another meaningful step toward a renderer that enhances SNES graphics fr
 The evidence is increasingly consistent with the project direction:
 
 > **Enhance the pixel art. Never erase the pixel art.**
+
+## Accepted corrected-baseline revalidation — 2026-10-05
+
+**IMPLEMENTED / SUPPORTED BUILD AND FOCUSED HOST CHECKS PASSED / RUNTIME TRANSFER INCOMPLETE.** This is a separate attempted transfer, not a replacement of the historical results above.
+
+- Accepted native source: `46fa75236fa61d49d8e9424b3b44694b88aa07a9` (Candidate A).
+- New worktree: `experiments/bsnes-exp-003-corrected/`; branch: `gtc-hd/exp-003-corrected-baseline`.
+- Starting/current HEAD: `13e19564bd038e3767a58b9f1f1d29b1d5f4f527` (corrected harness descendant). Observer changes are staged and **uncommitted**; exact built Git tree object: `07f80649ff9681fb0e566a12d549082e1203330b`. This tree ID is not a source commit.
+- Executable SHA-256: `9F59FD335261A7D7CF15FF43E22EA8C4EB56258E1EBCAB9CE7FA1B65B51B359F`.
+- Supported build: MSYS2 UCRT64 g++ 16.2.0 (Rev3), `make -j4 -C bsnes local=false`, passed. Existing observer logic/tests were retained without redesign or new semantic fields.
+
+The unchanged actual native composition/lineage fixture passed independent main/sub winners, priorities/ties, windows, backdrop/skipped, hires and native-state/passivity checks. Window/hasher checks, all 26 CLI rejection cases and 15 CSV schemas passed. Record size remains 176 bytes and capacity 65,536.
+
+Additional native-declaration bounds checks at `-O0` and `-O3` passed with the observer disabled, preserving Candidate A's 512x496 storage, pointer safety, late stores/clear, V=240 execution and 512x480 callback. Their presentation/native-field-state/screen streams matched the corrected harness control exactly. The short targeted bounds **ROM** fixture was not run against this integration.
+
+The common ROM/SRAM/settings input hashes were verified before launch and are recorded with exact build/test commands in the [consolidated transfer report](../../research/BSNES_ACCEPTED_BASELINE_REVALIDATION.md) and [tooling instructions](../../../tests/accepted-baseline-revalidation/README.md). The first corrected harness-only 600-callback process timed out after 180 seconds with zero native callback rows and no normal exit; the runner stopped before any corrected observer ROM run. Framebuffer equality, real-ROM capture counts and absence of runtime drops/unknowns are therefore **UNKNOWN for this corrected build**, not new passes or changed expectations.
+
+The 1,800-callback comparison and callback-500 capture of 61,440 records were **not reproduced** here. Historical main counts (BG1 11,969 / BG3 22,015 / OBJ 687 / backdrop 22,673 / skipped 4,096), sub counts (BG2 39,087 / backdrop 18,257 / skipped 4,096), 155 competitions and 47,391 source disagreements remain attributed to the historical binary. Window suppression remains implemented/host-tested but was not exercised by the selected historical real-ROM callback. This attempt adds no real-ROM coverage or final-color provenance.
+
+No local commit or push was made. Historical/public commit mappings, executable hashes, captures and dated implementation/test sections remain intact. Candidate A's experimental acceptance does not select bsnes as final core. EXP-004 remains blocked pending complete transfer validation and Xavier's explicit implementation reauthorization.
+
+## Completed corrected-baseline transfer — 2026-10-05
+
+**VERIFIED FOR TESTED CONDITIONS ON ACCEPTED CORRECTED BASELINE.** This later result supersedes the preceding attempted transfer's incomplete disposition while preserving its evidence.
+
+- Worktree: `experiments/bsnes-exp-003-corrected/`; branch: `gtc-hd/exp-003-corrected-baseline`.
+- Source commit: `c929e19a8583e388b0f8bf53d2d0a796c0d91386`; direct parent: `13e19564bd038e3767a58b9f1f1d29b1d5f4f527`, containing accepted native correction `46fa75236fa61d49d8e9424b3b44694b88aa07a9`.
+- Commit tree: `07f80649ff9681fb0e566a12d549082e1203330b`, identical to the previously staged/built integration. No observer redesign or emulator rebuild occurred.
+- Executable SHA-256: `9F59FD335261A7D7CF15FF43E22EA8C4EB56258E1EBCAB9CE7FA1B65B51B359F`.
+
+In the **normal desktop execution context**, disabled B and enabled C each exited 0 with 1,800 callbacks. Their complete framebuffer CSVs were byte-identical to the already verified corrected control and preserved historical sequence, SHA-256 `9BC5FF87FC19E52615CFFB334AD9AD75900F4C8F12818972C210479A857B99FB`. First divergence: none. The established ROM/SRAM/settings seed hashes were restored for each run; no restricted-context ROM launch or settings workaround was used.
+
+Callback 500 was observed once. Capture/export completed, dropped count was 0, overflow was false, and the observer disabled after export. The capture contains 61,440 records, capacity 65,536, unknown provenance 0. Main: BG1 11,969 / BG3 22,015 / OBJ 687 / backdrop 22,673 / skipped 4,096. Sub: BG2 39,087 / backdrop 18,257 / skipped 4,096; other source counts are zero. BG/OBJ competitions: 155; main/sub disagreements: 47,391; candidate window suppressions: 0. Winner lineage/outcomes remain valid. Real-ROM window suppression remains unexercised in this selected callback; final-color provenance remains outside EXP-003.
+
+Provenance CSV SHA-256: `C8084C47F39A9EF17B22F40F804ED30A02628F940C9CAA299495F29A52381EE8` (byte-identical to the historical capture). New summary SHA-256: `EF67AFB4B798F16E4A1ED27046A70BB9A4DA2A0EFB3FB26F71FFB00997654366`.
+
+Original focused checks and the additional Candidate A host/source checks at `-O0`/`-O3` passed. The observer-disabled short bounds ROM also exited 0 and matched the corrected control: V=240 OBJ/STAT77, overscan on → off, mixed live/latched overscan and interlace passed. Frame CSV SHA-256: `69416871a6eaf2541a684a352c4a7e13972cb49470ccc8b0f436ca9866fd04de`; SRAM/result SHA-256: `75d6febfa8370ea0969e9ab06312552e60479803d090d44e781531e4f7932acc`.
+
+The integration was committed locally only after all checks passed, with Xavier Laverde <xavier0286@gmail.com> as author and committer; it was not pushed. No runtime or semantic deviation occurred. A process-scoped Git ownership exception was needed for the known worktrees during host checks; see the [consolidated resumed report](../../research/BSNES_ACCEPTED_BASELINE_REVALIDATION.md#resumed-transfer-results--2026-10-05) for commands, exact counts, execution-context limits and retained evidence.
+
+These results transfer the tested claims to the corrected experimental baseline. They do not prove complete execution-state equality or universal compatibility, select bsnes as final core, or accept semantic-preservation architecture. All three transfers passed; EXP-004's native-baseline gate is satisfied, but its implementation remains unimplemented and unauthorized pending Xavier's explicit reauthorization.

@@ -2,7 +2,9 @@
 
 ## Current result
 
-**Status:** VERIFIED FOR TESTED EXP-002 CONDITIONS
+**Status:** VERIFIED FOR TESTED CONDITIONS ON ACCEPTED CORRECTED BASELINE
+
+**Corrected-baseline update — 2026-10-05:** the existing integration passed focused host/source checks, normal-desktop disabled/enabled runtime transfer and the targeted bounds fixture. See the [completed transfer addendum](#completed-corrected-baseline-transfer--2026-10-05). Earlier implementation, historical/public mappings and the stopped-transfer addendum below retain their original scope.
 
 **Implementation and supported build:** The OBJ observer is implemented; the MSYS2 UCRT64 desktop build and focused host tests passed. The completed historical real-ROM validation establishes the following additional results under the tested conditions.
 
@@ -14,7 +16,7 @@
 
 **Limits and architectural implication:** OAM slots are reusable hardware identities, not persistent game entities. A surviving OBJ candidate is recorded before layer windows and BG/OBJ main/sub composition, so it does not establish final framebuffer visibility or final color. Complete CPU-visible passivity, universal compatibility, broad raster/mode coverage and persistent scene identity remain unproven. The result supports the semantic-preservation **HYPOTHESIS**; it does not accept a production architecture or select bsnes.
 
-The [final-validation addendum](#11-final-validation-addendum--retained-real-rom-evidence) documents EXP-002's retained artifacts, input fingerprints, executable-identity limits and completed result. This summary is based on that evidence and the accompanying session record; no new emulation run is claimed. The original implementation/test sections below remain historical records.
+The [final-validation addendum](#11-final-validation-addendum--retained-real-rom-evidence) documents EXP-002's retained artifacts, input fingerprints, executable-identity limits and completed result. That historical summary is based on retained evidence and its session record. New corrected-baseline executions are documented separately in the completed transfer addendum. The original implementation/test sections below remain historical records.
 
 ## Public implementation
 
@@ -377,3 +379,44 @@ The winning sample has source X=3, color index 1 and palette index 129. The reco
 **OBJ provenance preservation, real native-overlap lineage and native framebuffer passivity are VERIFIED FOR TESTED EXP-002 CONDITIONS.** The previously pending runtime validation is complete for the recorded slice.
 
 OAM slots and fetched-row IDs do not establish persistent game-entity identity. A native OBJ winner does not establish final framebuffer visibility, final-pixel provenance or final color after composition/color math. Framebuffer equality does not prove all CPU-visible side effects, complete state equality, universal compatibility, worst-case runtime cost or coverage of every sprite mode/raster transition. The executable/input binding limits above remain explicit. This result supports continued semantic-preservation research; no accepted production architecture or emulator selection follows from it.
+
+## Accepted corrected-baseline revalidation — 2026-10-05
+
+**IMPLEMENTED / SUPPORTED BUILD AND FOCUSED HOST CHECKS PASSED / RUNTIME TRANSFER INCOMPLETE.** This is a separate attempted transfer, not a replacement of the historical results above.
+
+- Accepted native source: `46fa75236fa61d49d8e9424b3b44694b88aa07a9` (Candidate A).
+- New worktree: `experiments/bsnes-exp-002-corrected/`; branch: `gtc-hd/exp-002-corrected-baseline`.
+- Starting/current HEAD: `13e19564bd038e3767a58b9f1f1d29b1d5f4f527` (corrected harness descendant). Observer changes are staged and **uncommitted**; exact built Git tree object: `d7394a2f38942ee3e5990dced3111c8300baa9d8`. This tree ID is not a source commit.
+- Executable SHA-256: `F78FD4EFB4699483DEE4AD86F89EC2554AB38460E5F19F96DB0EC7B97B488735`.
+- Supported build: MSYS2 UCRT64 g++ 16.2.0 (Rev3), `make -j4 -C bsnes local=false`, passed. Existing observer logic/tests were retained without redesign or new semantic fields.
+
+The unchanged actual OBJ/OAM host fixture passed evaluation/fetch/winner lineage, priority rotation, transparent nonreplacement, double-bank lifetime, native 32-item/34-tile limits, partial fetch, flips/interlace, reset/gating and native-state comparisons. Window/hasher checks, all 26 CLI rejection cases and 14 CSV schemas passed. Record size remains 104 bytes.
+
+Additional native-declaration bounds checks at `-O0` and `-O3` passed with the observer disabled, preserving Candidate A's 512x496 storage, pointer safety, late stores/clear, V=240 execution and 512x480 callback. Their presentation/native-field-state/screen streams matched the corrected harness control exactly. The short targeted bounds **ROM** fixture was not run against this integration.
+
+The common ROM/SRAM/settings input hashes were verified before launch and are recorded with exact build/test commands in the [consolidated transfer report](../../research/BSNES_ACCEPTED_BASELINE_REVALIDATION.md) and [tooling instructions](../../../tests/accepted-baseline-revalidation/README.md). The first corrected harness-only 600-callback process timed out after 180 seconds with zero native callback rows and no normal exit; the runner stopped before any corrected observer ROM run. Framebuffer equality, real-ROM capture counts and absence of runtime drops/unknowns are therefore **UNKNOWN for this corrected build**, not new passes or changed expectations.
+
+The historical real-ROM 29,772 records (28,909 evaluations / 176 fetches / 687 winners), 687 known winner lineages and 12 overlap witnesses were **not reproduced** here; no corrected observer ROM capture occurred. OAM identity remains native provenance, not persistent game-entity identity; surviving OBJ candidates do not establish final framebuffer visibility or complete execution-state equivalence.
+
+No local commit or push was made. Historical/public commit mappings, executable hashes, captures and dated implementation/test sections remain intact. Candidate A's experimental acceptance does not select bsnes as final core. EXP-004 remains blocked pending complete transfer validation and Xavier's explicit implementation reauthorization.
+
+## Completed corrected-baseline transfer — 2026-10-05
+
+**VERIFIED FOR TESTED CONDITIONS ON ACCEPTED CORRECTED BASELINE.** This later result supersedes the preceding attempted transfer's incomplete disposition while preserving its evidence.
+
+- Worktree: `experiments/bsnes-exp-002-corrected/`; branch: `gtc-hd/exp-002-corrected-baseline`.
+- Source commit: `94238480bd11a0ca3b873da1d70c208ca2f9326c`; direct parent: `13e19564bd038e3767a58b9f1f1d29b1d5f4f527`, containing accepted native correction `46fa75236fa61d49d8e9424b3b44694b88aa07a9`.
+- Commit tree: `d7394a2f38942ee3e5990dced3111c8300baa9d8`, identical to the previously staged/built integration. No observer redesign or emulator rebuild occurred.
+- Executable SHA-256: `F78FD4EFB4699483DEE4AD86F89EC2554AB38460E5F19F96DB0EC7B97B488735`.
+
+In the **normal desktop execution context**, disabled B and enabled C each exited 0 with 600 callbacks. Their complete framebuffer CSVs were byte-identical to the already verified corrected control and preserved historical sequence, SHA-256 `92B098CF30A4171F707185B2A32918B8F361EDF30AC8BA6AA3F1FEAD39BAE96F`. First divergence: none. The established ROM/SRAM/settings seed hashes were restored for each run; no restricted-context ROM launch or settings workaround was used.
+
+Callback 500 was observed once. Capture/export completed, dropped count was 0, overflow was false, and the observer disabled after export. The capture contains 29,772 records: 28,909 evaluations, 176 fetches and 687 winners; capacity 131,072. Unknown winners are 0. All 687 winners retain Evaluation → Fetch → Winner lineage, matching OAM indices and decoded source samples. All 12 historical overlap witnesses remain present. OAM slots are not persistent game entities; surviving OBJ candidates do not establish final framebuffer visibility.
+
+Provenance CSV SHA-256: `7974E49DEE1EF8110453938B54201042BA79AFB3A1BFA57260EC220C93FC49C8` (byte-identical to the historical capture). New summary SHA-256: `7F043C2BECACB9492BED24775BDB7E735CE41F63A6ADB284C4E42128841BBC0A`.
+
+Original focused checks and the additional Candidate A host/source checks at `-O0`/`-O3` passed. The observer-disabled short bounds ROM also exited 0 and matched the corrected control: V=240 OBJ/STAT77, overscan on → off, mixed live/latched overscan and interlace passed. Frame CSV SHA-256: `69416871a6eaf2541a684a352c4a7e13972cb49470ccc8b0f436ca9866fd04de`; SRAM/result SHA-256: `75d6febfa8370ea0969e9ab06312552e60479803d090d44e781531e4f7932acc`.
+
+The integration was committed locally only after all checks passed, with Xavier Laverde <xavier0286@gmail.com> as author and committer; it was not pushed. No runtime or semantic deviation occurred. A process-scoped Git ownership exception was needed for the known worktrees during host checks; see the [consolidated resumed report](../../research/BSNES_ACCEPTED_BASELINE_REVALIDATION.md#resumed-transfer-results--2026-10-05) for commands, exact counts, execution-context limits and retained evidence.
+
+These results transfer the tested claims to the corrected experimental baseline. They do not prove complete execution-state equality or universal compatibility, select bsnes as final core, or accept semantic-preservation architecture. All three transfers passed; EXP-004's native-baseline gate is satisfied, but its implementation remains unimplemented and unauthorized pending Xavier's explicit reauthorization.

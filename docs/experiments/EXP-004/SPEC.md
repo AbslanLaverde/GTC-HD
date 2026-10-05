@@ -2,7 +2,7 @@
 
 Date: September 22, 2026.
 
-**Status:** P0 COMPLETE / EXP-004 IMPLEMENTATION BLOCKED / SEPARATE NATIVE-BASELINE INVESTIGATION REQUIRED
+**Status:** NATIVE-BASELINE GATE SATISFIED / READY FOR EXPLICIT IMPLEMENTATION REAUTHORIZATION
 
 **Research target:** bsnes cycle PPU
 
@@ -14,7 +14,9 @@ Date: September 22, 2026.
 
 **Production architecture impact:** None — experimental research only
 
-**Implementation gate:** EXP-004 color-math provenance implementation remains unauthorized. A separately scoped native-baseline investigation must determine the intended output/storage boundary and baseline disposition before the EXP-004 gate may be reconsidered. Source implementation remains blocked until that investigation is completed, its disposition is documented, and implementation is explicitly re-authorized.
+**Implementation gate — 2026-10-05:** the native-baseline gate is **satisfied for the tested conditions**. Xavier accepted Candidate A native source `46fa75236fa61d49d8e9424b3b44694b88aa07a9` as the corrected experimental research baseline, and EXP-001/002/003 subsequently passed focused host/source checks, normal-desktop framebuffer/provenance transfer and targeted bounds fixtures. See the [completed transfer report](../../research/BSNES_ACCEPTED_BASELINE_REVALIDATION.md#resumed-transfer-results--2026-10-05). EXP-004 color-math provenance implementation remains **unauthorized**; Xavier's explicit implementation reauthorization is still required. This result neither implements nor verifies EXP-004.
+
+The frozen source baseline and design/P0 sections below record the historical specification. They have not been silently rebased onto the now validated corrected EXP-003 integration. Candidate A acceptance and transfer validation neither select bsnes as final core nor authorize changes to the original EXP-004 worktree. P0 remains complete with its historical stop disposition preserved below.
 
 This document specifies an experiment. The source audit informs its design; source inspection does not verify the EXP-004 preservation or passivity hypothesis. EXP-004 is neither implemented nor verified by this specification revision.
 
@@ -29,7 +31,7 @@ The [public EXP-004 branch](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/e
 
 [Compare public C → public P0 tip](https://github.com/AbslanLaverde/bsnes/compare/f4a45d47797d4af0918768005b481f95e5ef4635...52cd72078fdc06a51ddeaa51efe943550dec795e). The [P0 report](P0_OUTPUT_BOUNDS_REPORT.md#public-investigation-source) preserves the original baseline and evidence attribution; the [publication map](../../research/BSNES_EXPERIMENT_PUBLICATION_MAP.md) explains the rewrite.
 
-**P0 bounds investigation only / implementation blocked.** EXP-004 implementation remains blocked pending completion of the separate native-baseline investigation, documented disposition, and explicit implementation re-authorization. Publishing the tests does not change this gate or select a native repair.
+**Public source: P0 bounds investigation only / implementation blocked pending explicit reauthorization.** Those public identities remain historical evidence. Corrected-baseline transfer validation has completed locally; explicit implementation reauthorization remains outstanding. The published P0 branch still contains no color-math provenance implementation.
 
 ## 1. Purpose
 
@@ -69,6 +71,8 @@ The earlier upstream baseline is `7d5aa1e656b9171524d01b1b22917197d8121cb4`. Rel
 The [audit](SOURCE_AUDIT_AND_IMPLEMENTATION_PLAN.md) supplies exact source references and distinguishes source observations, existing host-test evidence, inferences and unknowns. Its findings are design constraints for this experiment, not new runtime verification. EXP-003's existing results retain their documented scope.
 
 ### 3.2 EXP-004-P0 — Native Output Destination Bounds Investigation
+
+Historical P0 disposition and findings follow unchanged. The dated current gate above records the later baseline decision and incomplete transfer attempt.
 
 **P0 is complete for the documented investigation scope. It is a prerequisite stage of EXP-004, not a new numbered main experiment.**
 

@@ -2,6 +2,11 @@
 
 Source audit and implementation plan, September 22, 2026.
 
+**Current gate — 2026-10-05: NATIVE-BASELINE GATE SATISFIED / READY FOR EXPLICIT IMPLEMENTATION REAUTHORIZATION.** Candidate A native source `46fa75236fa61d49d8e9424b3b44694b88aa07a9` is accepted as the experimental research baseline. The existing EXP-001/002/003 integrations passed focused host/source checks, normal-desktop framebuffer/provenance transfers and targeted bounds fixtures for the specified conditions. See the [completed transfer report](../../research/BSNES_ACCEPTED_BASELINE_REVALIDATION.md#resumed-transfer-results--2026-10-05). EXP-004 remains unimplemented and unverified; Xavier's explicit implementation reauthorization is still required before any source implementation.
+
+The audit below remains the historical September 22 source observation/design plan at its recorded revision. Its original bounds findings and line references have not been rewritten to describe Candidate A. No color-math provenance implementation is authorized by this update.
+
+
 **Recommendation — INFERENCE: revise EXP-004's diagnostic model, then proceed in stages.** Passive observation points exist in the inspected source, but current main/sub winners alone cannot explain hires samples. The model needs a carried-main operand, carried control provenance, explicit scanline seeds, and separate pre-brightness/native-output encodings. A source-discovered output-buffer bounds concern also needs a focused prerequisite check before claiming that every native store is a valid framebuffer sample.
 
 This document is an audit and plan only. No EXP-004 implementation, new host test, build, ROM run, commit, ADR, specification change, or project-state update was performed. Existing test logs and retained runtime artifacts were inspected; their evidence is identified separately from source inspection. No emulator or production architecture is selected.
