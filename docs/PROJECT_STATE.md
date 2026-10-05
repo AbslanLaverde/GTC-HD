@@ -54,8 +54,9 @@ This acceptance covers the **experimental research baseline only**. It does not 
 | EXP-001 | VERIFIED FOR TESTED CONDITIONS ON ACCEPTED CORRECTED BASELINE | `ab04d023b728f08f7cbfaa38e75dcf8031a04158` |
 | EXP-002 | VERIFIED FOR TESTED CONDITIONS ON ACCEPTED CORRECTED BASELINE | `94238480bd11a0ca3b873da1d70c208ca2f9326c` |
 | EXP-003 | VERIFIED FOR TESTED CONDITIONS ON ACCEPTED CORRECTED BASELINE | `c929e19a8583e388b0f8bf53d2d0a796c0d91386` |
+| EXP-004 | VERIFIED FOR TESTED EXP-004 CONDITIONS | `cc8d1f0d0a67b0ee523549671b9843f67c7c7534` |
 
-**EXP-004: NATIVE-BASELINE GATE SATISFIED / READY FOR EXPLICIT IMPLEMENTATION REAUTHORIZATION.** The separate investigation has an accepted experimental baseline disposition and all three transfers passed. EXP-004 color-math provenance remains unimplemented, unverified and unauthorized until Xavier explicitly reauthorizes implementation.
+**EXP-004: VERIFIED FOR TESTED EXP-004 CONDITIONS.** Following Xavier's explicit reauthorization, the isolated corrected implementation passed focused/affected host tests, Candidate A bounds regression, the targeted runtime fixture and the deterministic 1,800-callback disabled/enabled/control comparison. Callback 500 captured 61,440 records with no drops, overflow or unknown provenance, including real CurrentSub and FixedColor addition; hires/carried-main, subtraction and halving remain host-tested only. See [EXP-004 results](experiments/EXP-004/RESULTS.md). The historical P0 stop remains preserved; this result does not accept a production semantic-frame format or select a final core/renderer architecture.
 
 These bsnes runtime tests require the **normal desktop execution context**. In the diagnosed restricted context, Direct3D 9 initialization failed and blocked in the video-driver error dialog before ROM loading; that limitation does not establish an emulator/runtime defect. The exact Direct3D HRESULT remains unknown.
 
@@ -106,6 +107,30 @@ No production repository architecture has been accepted.
 
 EXP-001/002/003 retain their historical tested-condition results and have now reproduced the specified framebuffer/provenance claims on the accepted corrected experimental baseline. Broader execution-state equivalence and universal compatibility remain unproven; no production renderer or semantic interface has been accepted.
 
-## Next Research Action
+## Immediate Next Action
 
-Obtain Xavier's explicit EXP-004 implementation reauthorization, using the completed corrected-baseline transfer results and preserved historical P0/design evidence. The satisfied native-baseline gate does not itself authorize source changes or select a final core/architecture.
+Complete the planned post-EXP-004 documentation, foundational-knowledge and
+roadmap reconciliation.
+
+Reconcile current experiment outcomes, the accepted experimental baseline,
+remaining evidence gaps, historical/public source identities, and Xavier's
+approved play-first Runtime, Studio authoring and shareable-profile direction.
+Preserve the distinction between accepted product goals and unresolved
+implementation architecture.
+
+Use a bounded, question-driven related-work review to inform the first
+semantic-to-visual vertical slice. Do not reopen completed experiments without
+a specific contradiction or a concrete requirement from the next consumer.
+
+## Candidate Next Technical Step — Not Yet Authorized
+
+Evaluate a small semantic-to-visual vertical slice. A bounded offline replay
+check is a candidate first step: independently reconstruct selected native
+results from captured operands, controls and history, using captured output
+values as comparison references rather than as the reconstruction itself.
+
+Explicit raster/history and presentation ownership, a deterministic
+hires-transition witness, and complete Mode 7 lineage remain identified
+questions. Their sequencing and scope will be decided during reconciliation;
+this section does not authorize a new experiment, production renderer or
+final semantic-frame interface.

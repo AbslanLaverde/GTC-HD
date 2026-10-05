@@ -499,3 +499,41 @@ For these checkouts:
 Read the relevant experiment specification/results and `docs/research/BSNES_NATIVE_OUTPUT_BOUNDS_RUNTIME_VALIDATION.md` before revalidation.
 
 Current revalidation disposition: EXP-001/002/003 are **VERIFIED FOR TESTED CONDITIONS ON ACCEPTED CORRECTED BASELINE** after focused host/source checks, normal-desktop framebuffer/provenance transfers and targeted bounds fixtures passed. EXP-004 is **NATIVE-BASELINE GATE SATISFIED / READY FOR EXPLICIT IMPLEMENTATION REAUTHORIZATION**; source implementation remains unauthorized until Xavier explicitly reauthorizes it. Runtime validation must use the normal desktop execution context; the diagnosed restricted-context Direct3D 9 modal failure is a validation-environment limitation, with exact HRESULT unknown. See `docs/research/BSNES_ACCEPTED_BASELINE_REVALIDATION.md`.
+
+### EXP-004 Corrected Baseline — Implementation Reauthorization, 2026-10-05
+
+Xavier explicitly reauthorized EXP-004 color-math / final-native-sample provenance implementation after the completed corrected-baseline transfers. This dated authorization supersedes the pending reauthorization gate above; historical P0 findings and protected worktrees retain their original scope.
+
+The worktree:
+
+`experiments/bsnes-exp-004-corrected/`
+
+is writable only for:
+
+**EXP-004 — Color Math and Final-Native-Sample Provenance on the accepted corrected experimental baseline**
+
+Expected branch:
+
+`gtc-hd/exp-004-color-math-provenance-corrected`
+
+Required parent:
+
+`c929e19a8583e388b0f8bf53d2d0a796c0d91386`
+
+Accepted native correction:
+
+`46fa75236fa61d49d8e9424b3b44694b88aa07a9`
+
+For this checkout:
+
+- preserve Candidate A's 512x496 backing, pointer safety, native late stores, V=240 execution and 512x480 presentation;
+- preserve native composition, color-math lifetimes, stateful reads, lookup/store ordering and serialization semantics;
+- do not modify upstream, historical EXP-004/P0, prior experiment/corrected-baseline, Candidate A or public source branches;
+- validate focused host behavior, affected EXP-003 behavior, Candidate A bounds and deterministic runtime passivity; emulator launches must use the normal desktop execution context;
+- stop and report unexpected native/provenance divergence or intended-window overflow; do not change expectations to obtain a pass;
+- a local source commit is authorized only after required validation passes, with Xavier Laverde <xavier0286@gmail.com> as author and committer; do not push or merge;
+- this remains experimental research, not production source, a final semantic-frame format or selection of bsnes.
+
+Read `docs/experiments/EXP-004/SPEC.md`, `docs/experiments/EXP-004/SOURCE_AUDIT_AND_IMPLEMENTATION_PLAN.md`, the preserved P0 evidence and `docs/research/BSNES_ACCEPTED_BASELINE_REVALIDATION.md` before implementation.
+
+Current disposition: **VERIFIED FOR TESTED EXP-004 CONDITIONS** at local source commit `cc8d1f0d0a67b0ee523549671b9843f67c7c7534`, following focused/affected host checks, Candidate A regression, targeted runtime and deterministic framebuffer/provenance validation. See `docs/experiments/EXP-004/RESULTS.md` for tested coverage and remaining limitations. This supersedes the earlier pending implementation status only for this authorized corrected checkout; historical P0 evidence and protected worktree permissions remain unchanged. No push, merge, final core selection or production semantic-frame acceptance is authorized by this result.
