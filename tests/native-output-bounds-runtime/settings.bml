@@ -1,0 +1,50 @@
+Video
+  Driver: None
+  Blocking: false
+  Blur: false
+  Filter: None
+  Overscan: true
+Audio
+  Driver: None
+  Blocking: false
+Input
+  Driver: None
+  Defocus: Block
+Rewind
+  Frequency: 0
+Emulator
+  WarnOnUnverifiedGames: false
+  AutoSaveMemory
+    Enable: false
+  AutoSaveStateOnUnload: false
+  AutoLoadStateOnLoad: false
+  Serialization
+    Method: Fast
+  RunAhead
+    Frames: 0
+  Hack
+    Hotfixes: false
+    Entropy: None
+    CPU
+      Overclock: 100
+      FastMath: false
+    PPU
+      Fast: false
+      Deinterlace: false
+      NoSpriteLimit: false
+      NoVRAMBlocking: false
+    DSP
+      Fast: true
+      Cubic: false
+      EchoShadow: false
+    Coprocessor
+      DelayedSync: true
+      PreferHLE: false
+  Cheats
+    Enable: false
+General
+  Crashed: false
+SuperFamicom
+  ControllerPort1: Gamepad
+  ControllerPort2: Gamepad
+  ExpansionPort: None
