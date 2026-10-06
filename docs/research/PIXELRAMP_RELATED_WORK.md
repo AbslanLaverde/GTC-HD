@@ -2,6 +2,8 @@
 
 Review date: October 5, 2026. Scope: public-source research synthesis and product-direction record.
 
+**Later post-EXP-004 refresh, October 5, 2026:** [section 20](#20-post-exp-004-source-availability-refresh) records the new availability check and current GTC-HD status. Earlier blocked-EXP-004 and project-state statements below retain their historical checkpoint context; they are not the current gate.
+
 **PixelRamp is significant contemporary related work. Its published description is relevant to GTC-HD; this report is not an audit of its unpublished implementation.**
 
 **ACCEPTED PRODUCT DIRECTION:** Xavier has explicitly approved GTC-HD as its own player-facing product, a play-first Runtime, a future Studio with pause/select/inspect/modify/live-preview authoring, shareable profiles and a long-term community library, and usable universal enhancement enriched by optional authored knowledge. These are intended product outcomes, not implemented features or accepted implementation architecture.
@@ -269,3 +271,11 @@ This report is linked from the existing research index. It records the explicit 
 No substantive conflict was found with GTC-HD's fidelity priorities or existing universal-plus-profile aim. The discrepancies are authority wording, stale chronology and a proposed sequencing change that still requires discussion. PixelRamp's unpublished implementation also prevents any claim that the two projects have equivalent internals.
 
 `PROJECT_STATE.md`, AGENTS.md and historical experiment documents remain unchanged. No ADR, architecture acceptance, source/worktree modification, build, test, ROM execution, commit or push occurred in this task.
+
+## 20. Post-EXP-004 source-availability refresh
+
+**SOURCE OBSERVATION — October 5, 2026, subsequent comparative audit:** the public `main` revision remains `89099c1e5d3b97f0408b36ffe2fae955e49234a5`. Its [pinned tree](https://github.com/Artificial-Age/PixelRamp-SNES-Remaster-Toolkit/tree/89099c1e5d3b97f0408b36ffe2fae955e49234a5) still contains only `.gitignore` and `README.md`; the [README](https://github.com/Artificial-Age/PixelRamp-SNES-Remaster-Toolkit/blob/89099c1e5d3b97f0408b36ffe2fae955e49234a5/README.md) still describes a placeholder pending implementation publication. No public implementation was available to audit. Earlier documentation/creator claims remain attributed claims; the community discussions and videos were not newly validated by this refresh.
+
+**DOCUMENTED CLAIM — current GTC-HD authority:** [PROJECT_STATE](../PROJECT_STATE.md) now records Candidate A as the accepted corrected experimental baseline, completed corrected EXP-001/002/003 revalidation and [EXP-004 VERIFIED FOR TESTED EXP-004 CONDITIONS](../experiments/EXP-004/RESULTS.md). This supersedes the earlier blocked/status descriptions in this note, without changing their historical evidence or selecting a final core, renderer or profile schema. The approved product direction above remains intact.
+
+The [post-EXP-004 comparative audit](RELATED_WORK_SURVEY.md) recommends a bounded offline replay plus frozen authoring preview before live integration or physical-depth effects. That recommendation narrows the first proposed build; it does not revoke the eventual Runtime/Studio/profile goals or authorize implementation. PixelRamp's unpublished internals do not block this next consumer experiment.
