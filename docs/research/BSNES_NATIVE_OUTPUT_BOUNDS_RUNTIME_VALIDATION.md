@@ -419,3 +419,11 @@ emulator worktrees remain untouched. Only this report and the new fixture source
 files were added. No emulator source/harness change, emulator rebuild, ADR,
 baseline acceptance, EXP-004 implementation, commit, push or merge occurred.
 The only new ROM executions were the three short targeted runs reported here.
+
+## Decision addendum — 2026-10-05
+
+Xavier **ACCEPTED Candidate A** (`46fa75236fa61d49d8e9424b3b44694b88aa07a9`) as the corrected **experimental research baseline**: pointer-safe 512x496 backing, unchanged 512x480 presentation, retained native execution/late stores and defined pair-240 transition clearing. Candidate B remains viable tested comparative evidence, not selected.
+
+This decision follows the historical recommendation above; it does not rewrite that report, select bsnes as the final core, imply upstream acceptance or universal hardware correctness, or authorize EXP-004 implementation. EXP-001/002/003 claims require separate transfer revalidation on the accepted correction. Their original source and binary identities remain historical evidence. Current disposition is recorded in [Project State](../PROJECT_STATE.md).
+
+**Revalidation outcome for the accepted baseline — 2026-10-05:** the new harness/observer builds and focused host checks passed, but the corrected control's first 600-callback attempt timed out after 180 seconds with zero framebuffer rows. Runtime transfers and targeted regression ROM runs did not proceed. The [separate transfer report](BSNES_ACCEPTED_BASELINE_REVALIDATION.md) records this stop; Candidate A remains accepted on the prior evidence and decision, while EXP-004 remains implementation-blocked. Historical findings above remain unchanged.
