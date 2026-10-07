@@ -2,6 +2,8 @@
 
 Review date: October 5, 2026. Scope: public-source research synthesis and product-direction record.
 
+**Reconciliation notice — October 6, 2026:** [Product Direction](../PRODUCT_DIRECTION.md) now provides the canonical home for the already approved intentions recorded here. [Project State](../PROJECT_STATE.md) records the accepted experimental baseline and completed EXP-004; [the draft next contract](../specs/OFFLINE_REPLAY_PREVIEW.md) awaits review and separate implementation authorization. The approval context, earlier blocked checkpoints and later refresh below remain historical evidence, not current gate instructions. No external-source refresh was performed for this reconciliation.
+
 **Later post-EXP-004 refresh, October 5, 2026:** [section 20](#20-post-exp-004-source-availability-refresh) records the new availability check and current GTC-HD status. Earlier blocked-EXP-004 and project-state statements below retain their historical checkpoint context; they are not the current gate.
 
 **PixelRamp is significant contemporary related work. Its published description is relevant to GTC-HD; this report is not an audit of its unpublished implementation.**

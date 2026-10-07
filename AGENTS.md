@@ -50,6 +50,12 @@ The SNES emulator/core foundation and PPU interception boundary are:
 
 No emulator/core has been selected.
 
+**Current disposition — 2026-10-06:** Candidate A `46fa75236fa61d49d8e9424b3b44694b88aa07a9` is the accepted corrected **experimental** baseline. EXP-001/002/003 are **VERIFIED FOR TESTED CONDITIONS ON ACCEPTED CORRECTED BASELINE**; the separately reauthorized corrected EXP-004 is **VERIFIED FOR TESTED EXP-004 CONDITIONS** at `cc8d1f0d0a67b0ee523549671b9843f67c7c7534`. See [Project State](docs/PROJECT_STATE.md) and [EXP-004 results](docs/experiments/EXP-004/RESULTS.md).
+
+The original EXP-004/P0 registration and the pre-reauthorization checkpoint under “Accepted Candidate A Revalidation — 2026-10-05” retain their historical gate context. The later “EXP-004 Corrected Baseline — Implementation Reauthorization, 2026-10-05” section records their scoped supersession; it does not unlock the historical worktrees. Candidate A's earlier “not accepted” registration wording is likewise superseded only by its recorded experimental acceptance. All worktree permissions and protections below remain unchanged.
+
+The diagnosed startup limitation concerns the specified Direct3D 9 desktop configuration in the restricted execution context; it is not a general failure of headless/None-driver or Windows execution. This clarification does not relax existing task-specific launch restrictions. The next [offline replay/preview contract](docs/specs/OFFLINE_REPLAY_PREVIEW.md) is **DRAFT / PROPOSED — NOT ACCEPTED; IMPLEMENTATION NOT AUTHORIZED**. This documentation reconciliation grants no source-edit, runtime, commit or publication permission.
+
 ## Upstream Repository Rules
 
 Unless a task explicitly says otherwise:

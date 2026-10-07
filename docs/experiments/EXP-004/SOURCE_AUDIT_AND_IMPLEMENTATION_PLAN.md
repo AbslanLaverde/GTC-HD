@@ -2,6 +2,12 @@
 
 Source audit and implementation plan, September 22, 2026.
 
+**Current disposition — 2026-10-06: VERIFIED FOR TESTED EXP-004 CONDITIONS.** Corrected implementation `cc8d1f0d0a67b0ee523549671b9843f67c7c7534`, rooted at corrected EXP-003 `c929e19a8583e388b0f8bf53d2d0a796c0d91386`, completed after Candidate A acceptance, successful transfers and Xavier's explicit reauthorization. See [RESULTS.md](RESULTS.md) and the [current specification disposition](SPEC.md). The accepted native correction is `46fa75236fa61d49d8e9424b3b44694b88aa07a9`; no production interface or final core is selected.
+
+### Historical gate checkpoint — October 5, before reauthorization
+
+The following former “Current gate” is retained as a dated checkpoint. The disposition above supersedes its pending implementation status, not its safety requirements or source observations. The September 22 audit body and its original no-implementation statement describe that audit task; this notice grants no new source permission.
+
 **Current gate — 2026-10-05: NATIVE-BASELINE GATE SATISFIED / READY FOR EXPLICIT IMPLEMENTATION REAUTHORIZATION.** Candidate A native source `46fa75236fa61d49d8e9424b3b44694b88aa07a9` is accepted as the experimental research baseline. The existing EXP-001/002/003 integrations passed focused host/source checks, normal-desktop framebuffer/provenance transfers and targeted bounds fixtures for the specified conditions. See the [completed transfer report](../../research/BSNES_ACCEPTED_BASELINE_REVALIDATION.md#resumed-transfer-results--2026-10-05). EXP-004 remains unimplemented and unverified; Xavier's explicit implementation reauthorization is still required before any source implementation.
 
 The audit below remains the historical September 22 source observation/design plan at its recorded revision. Its original bounds findings and line references have not been rewritten to describe Candidate A. No color-math provenance implementation is authorized by this update.

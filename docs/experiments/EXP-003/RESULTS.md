@@ -4,6 +4,8 @@ Date: September 22, 2026.
 
 **Status:** VERIFIED FOR TESTED CONDITIONS ON ACCEPTED CORRECTED BASELINE
 
+**Reconciliation notice — 2026-10-06:** this status and the experiment's measured scope are unchanged. Public-source links below identify the September 23 publication snapshot; the corrected local integration is a separate identity. Later [EXP-004 results](../EXP-004/RESULTS.md) supersede the pre-reauthorization EXP-004 gate in historical transfer sections, without extending EXP-003's own claims.
+
 **Corrected-baseline update — 2026-10-05:** the existing integration passed focused host/source checks, normal-desktop disabled/enabled runtime transfer and the targeted bounds fixture. See the [completed transfer addendum](#completed-corrected-baseline-transfer--2026-10-05). Earlier implementation, historical/public mappings and the stopped-transfer addendum below retain their original scope.
 
 **Research target:** bsnes cycle PPU  

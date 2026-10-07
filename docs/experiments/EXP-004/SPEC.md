@@ -2,27 +2,33 @@
 
 Date: September 22, 2026.
 
-**Status:** NATIVE-BASELINE GATE SATISFIED / READY FOR EXPLICIT IMPLEMENTATION REAUTHORIZATION
+**Current status — 2026-10-06:** VERIFIED FOR TESTED EXP-004 CONDITIONS
 
 **Research target:** bsnes cycle PPU
 
 **Experimental dependency:** EXP-003 composition provenance
 
-**Frozen source baseline:** `76bdb9250befa62fcbf23fcff2ef962fe2f58215`
+**Historical frozen source baseline:** `76bdb9250befa62fcbf23fcff2ef962fe2f58215`
 
 **Design evidence:** [Source audit and implementation plan](SOURCE_AUDIT_AND_IMPLEMENTATION_PLAN.md)
 
 **Production architecture impact:** None — experimental research only
 
+**Current disposition — 2026-10-06:** following Candidate A acceptance, completed transfers and Xavier's explicit reauthorization, corrected EXP-004 was implemented and verified at `cc8d1f0d0a67b0ee523549671b9843f67c7c7534`, parent `c929e19a8583e388b0f8bf53d2d0a796c0d91386` (corrected EXP-003). [EXP-004 results](RESULTS.md) are authoritative for the tested implementation and its limits. The native correction remains Candidate A `46fa75236fa61d49d8e9424b3b44694b88aa07a9`. This supersedes the pending gate below for the separately authorized corrected checkout only; it grants no new source permission and does not select a final core or production interface.
+
+### Historical implementation gate — 2026-10-05, before reauthorization
+
+The following checkpoint is preserved as history, not the current gate:
+
 **Implementation gate — 2026-10-05:** the native-baseline gate is **satisfied for the tested conditions**. Xavier accepted Candidate A native source `46fa75236fa61d49d8e9424b3b44694b88aa07a9` as the corrected experimental research baseline, and EXP-001/002/003 subsequently passed focused host/source checks, normal-desktop framebuffer/provenance transfer and targeted bounds fixtures. See the [completed transfer report](../../research/BSNES_ACCEPTED_BASELINE_REVALIDATION.md#resumed-transfer-results--2026-10-05). EXP-004 color-math provenance implementation remains **unauthorized**; Xavier's explicit implementation reauthorization is still required. This result neither implements nor verifies EXP-004.
 
 The frozen source baseline and design/P0 sections below record the historical specification. They have not been silently rebased onto the now validated corrected EXP-003 integration. Candidate A acceptance and transfer validation neither select bsnes as final core nor authorize changes to the original EXP-004 worktree. P0 remains complete with its historical stop disposition preserved below.
 
-This document specifies an experiment. The source audit informs its design; source inspection does not verify the EXP-004 preservation or passivity hypothesis. EXP-004 is neither implemented nor verified by this specification revision.
+The preceding checkpoint and numbered design/P0 sections below retain their historical scope and safety/passivity requirements. Source inspection alone did not verify the EXP-004 preservation or passivity hypothesis; the later implementation evidence is in RESULTS.md, not a retroactive upgrade of this design audit.
 
-## Public research source
+## Public research source — September 23, 2026 snapshot
 
-The [public EXP-004 branch](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-004-color-math-provenance) in [AbslanLaverde/bsnes](https://github.com/AbslanLaverde/bsnes) contains the sanitized EXP-003 foundation plus the EXP-004-P0 investigation tests. It **does not contain color-math provenance implementation**.
+The recorded revision of the [public EXP-004 branch](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-004-color-math-provenance) in [AbslanLaverde/bsnes](https://github.com/AbslanLaverde/bsnes) contains the sanitized EXP-003 foundation plus the EXP-004-P0 investigation tests. It **does not contain color-math provenance implementation**. Remote availability was not rechecked for this reconciliation.
 
 | Identity | Historical commit | Public research equivalent |
 | --- | --- | --- |
@@ -31,7 +37,7 @@ The [public EXP-004 branch](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/e
 
 [Compare public C → public P0 tip](https://github.com/AbslanLaverde/bsnes/compare/f4a45d47797d4af0918768005b481f95e5ef4635...52cd72078fdc06a51ddeaa51efe943550dec795e). The [P0 report](P0_OUTPUT_BOUNDS_REPORT.md#public-investigation-source) preserves the original baseline and evidence attribution; the [publication map](../../research/BSNES_EXPERIMENT_PUBLICATION_MAP.md) explains the rewrite.
 
-**Public source: P0 bounds investigation only / implementation blocked pending explicit reauthorization.** Those public identities remain historical evidence. Corrected-baseline transfer validation has completed locally; explicit implementation reauthorization remains outstanding. The published P0 branch still contains no color-math provenance implementation.
+**Recorded public source: P0 bounds investigation only.** These historical/public identities and their mappings remain intact. The later corrected integration is a distinct local implementation, not an identity-only rewrite of this public revision. Current EXP-004 is verified for its tested conditions; the P0-only publication snapshot does not imply an outstanding implementation gate.
 
 ## 1. Purpose
 
@@ -72,7 +78,7 @@ The [audit](SOURCE_AUDIT_AND_IMPLEMENTATION_PLAN.md) supplies exact source refer
 
 ### 3.2 EXP-004-P0 — Native Output Destination Bounds Investigation
 
-Historical P0 disposition and findings follow unchanged. The dated current gate above records the later baseline decision and incomplete transfer attempt.
+Historical P0 disposition and findings follow unchanged. Their stop was subsequently dispositioned through the separate baseline investigation, completed transfers and explicit reauthorization; the current disposition above points to the later EXP-004 results. The original P0 stop and requirements below are not the current corrected-checkout gate.
 
 **P0 is complete for the documented investigation scope. It is a prerequisite stage of EXP-004, not a new numbered main experiment.**
 

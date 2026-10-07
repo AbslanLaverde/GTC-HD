@@ -1,6 +1,6 @@
 # GTC-HD — Project State
 
-**Last Updated:** October 5, 2026
+**Last Updated:** October 6, 2026
 **Current Phase:** Phase 0 — Discovery / Research / Architecture
 
 ## Vision
@@ -12,6 +12,8 @@ Guiding principle:
 > **Enhance the pixel art. Never erase the pixel art.**
 
 Original game behavior, accurate SNES execution, faithful rendering semantics, and pixel-art identity take priority over enhancement effects.
+
+[Approved Product Direction](PRODUCT_DIRECTION.md) records Xavier's play-first Runtime, eventual Studio authoring, shareable-profile and GamingTheClassX intentions. These are product goals; core, renderer, schema and service architecture remain undecided.
 
 ## Current Objective
 
@@ -37,6 +39,8 @@ bsnes has been investigated first as a research target.
 
 This does **not** mean bsnes has been selected.
 
+The experiments below establish useful interception evidence for bounded native paths. The strategic question remains open; the initial question of whether any such provenance can be preserved has narrower positive evidence now.
+
 ## Accepted Experimental Baseline — 2026-10-05
 
 **ACCEPTED:** Xavier accepted Candidate A as the corrected experimental bsnes baseline for continued GTC-HD research.
@@ -56,9 +60,11 @@ This acceptance covers the **experimental research baseline only**. It does not 
 | EXP-003 | VERIFIED FOR TESTED CONDITIONS ON ACCEPTED CORRECTED BASELINE | `c929e19a8583e388b0f8bf53d2d0a796c0d91386` |
 | EXP-004 | VERIFIED FOR TESTED EXP-004 CONDITIONS | `cc8d1f0d0a67b0ee523549671b9843f67c7c7534` |
 
-**EXP-004: VERIFIED FOR TESTED EXP-004 CONDITIONS.** Following Xavier's explicit reauthorization, the isolated corrected implementation passed focused/affected host tests, Candidate A bounds regression, the targeted runtime fixture and the deterministic 1,800-callback disabled/enabled/control comparison. Callback 500 captured 61,440 records with no drops, overflow or unknown provenance, including real CurrentSub and FixedColor addition; hires/carried-main, subtraction and halving remain host-tested only. See [EXP-004 results](experiments/EXP-004/RESULTS.md). The historical P0 stop remains preserved; this result does not accept a production semantic-frame format or select a final core/renderer architecture.
+**EXP-004: VERIFIED FOR TESTED EXP-004 CONDITIONS.** Following Xavier's explicit reauthorization, the isolated corrected implementation passed focused/affected host tests, Candidate A bounds regression, the targeted runtime fixture and the deterministic 1,800-callback disabled/enabled/control comparison. Callback 500 captured 61,440 records with no drops, overflow or unknown provenance, including real CurrentSub and FixedColor addition; hires/carried-main, subtraction and halving remain host-tested only. All positions in that real-ROM capture were lowres, with zero-valued main backdrop operands on math-enabled samples; this does not demonstrate general two-nonzero-operand addition or saturation in that slice. See [EXP-004 results](experiments/EXP-004/RESULTS.md). The historical P0 stop remains preserved; this result does not accept a production semantic-frame format or select a final core/renderer architecture.
 
-These bsnes runtime tests require the **normal desktop execution context**. In the diagnosed restricted context, Direct3D 9 initialization failed and blocked in the video-driver error dialog before ROM loading; that limitation does not establish an emulator/runtime defect. The exact Direct3D HRESULT remains unknown.
+The specified SMW desktop configuration failed Direct3D 9 initialization in the diagnosed restricted execution context and blocked in the video-driver error dialog before ROM loading. The corresponding normal-desktop launches succeeded. This demonstrates a limitation of that driver/configuration/context combination, not of all headless/None-driver runs or all Windows execution; the exact Direct3D HRESULT remains unknown. Existing task-specific launch restrictions remain applicable.
+
+The [publication map](research/BSNES_EXPERIMENT_PUBLICATION_MAP.md) preserves the September 23 public-source snapshot. The corrected integrations above are separate local source identities, not equivalent publication rewrites or claims of current public availability.
 
 ## Decisions Not Yet Made
 
@@ -105,32 +111,18 @@ No final emulator/core foundation has been accepted; the experimental baseline d
 
 No production repository architecture has been accepted.
 
-EXP-001/002/003 retain their historical tested-condition results and have now reproduced the specified framebuffer/provenance claims on the accepted corrected experimental baseline. Broader execution-state equivalence and universal compatibility remain unproven; no production renderer or semantic interface has been accepted.
+EXP-001/002/003 retain their historical tested-condition results and have now reproduced the specified framebuffer/provenance claims on the accepted corrected experimental baseline; EXP-004 subsequently completed its scoped implementation and validation. Broader execution-state equivalence and universal compatibility remain unproven; no production renderer or semantic interface has been accepted.
 
-## Immediate Next Action
+## Documentation Milestone — 2026-10-06
 
-Complete the planned post-EXP-004 documentation, foundational-knowledge and
-roadmap reconciliation.
+The [bounded post-EXP-004 comparative audit](research/RELATED_WORK_SURVEY.md) is complete for its inspected revisions and scope. Current-status reconciliation is prepared, approved product intentions have a canonical home, and complete [Knowledge Base v2.0](knowledge/KNOWLEDGE_BASE.md) and [Custom GPT Instructions v2.0](knowledge/CUSTOM_GPT_INSTRUCTIONS.md) replacements are **proposed, pending review**. They have not been installed in a GPT.
 
-Reconcile current experiment outcomes, the accepted experimental baseline,
-remaining evidence gaps, historical/public source identities, and Xavier's
-approved play-first Runtime, Studio authoring and shareable-profile direction.
-Preserve the distinction between accepted product goals and unresolved
-implementation architecture.
+This milestone records prior decisions and corrects stale current-status wording. It does not accept a new architecture. Historical outcomes, source/public identities and measured conditions remain preserved.
 
-Use a bounded, question-driven related-work review to inform the first
-semantic-to-visual vertical slice. Do not reopen completed experiments without
-a specific contradiction or a concrete requirement from the next consumer.
+## Immediate Next Decision — Contract Review
 
-## Candidate Next Technical Step — Not Yet Authorized
+Xavier's document review and scope approval are next. The [offline replay and frozen source-selection/glow preview contract](specs/OFFLINE_REPLAY_PREVIEW.md) is **DRAFT / PROPOSED — NOT ACCEPTED; IMPLEMENTATION NOT AUTHORIZED**. No experiment number has been assigned and no consumer implementation has begun.
 
-Evaluate a small semantic-to-visual vertical slice. A bounded offline replay
-check is a candidate first step: independently reconstruct selected native
-results from captured operands, controls and history, using captured output
-values as comparison references rather than as the reconstruction itself.
+The proposal asks whether an independent consumer can reconstruct a supported lowres/noninterlaced captured interval from operands, controls and history, then enable one honest capture-bound authored edit. Captured output is an oracle, not the reconstruction input. Approval must resolve the interval/crop, raster/epoch and alias ownership, seed policy, selection-mask meaning, annotation and temporary implementation/sampling choices. Actual retained capture identity/schema/producer verification is a prerequisite for a future run; private captures were not inspected in this reconciliation.
 
-Explicit raster/history and presentation ownership, a deterministic
-hires-transition witness, and complete Mode 7 lineage remain identified
-questions. Their sequencing and scope will be decided during reconciliation;
-this section does not authorize a new experiment, production renderer or
-final semantic-frame interface.
+Near-term sequence: completed baseline/EXP-001–004 → completed comparative audit → this reconciliation → contract approval → separately authorized bounded consumer. Complete hires/history ownership, a deterministic hires-transition witness and Mode 7 lineage remain later candidates, not automatic prerequisites for a restricted proposal that excludes them. Do not reopen completed experiments without a specific contradiction or concrete consumer requirement.

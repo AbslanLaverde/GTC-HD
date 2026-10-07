@@ -56,7 +56,7 @@ These are development targets, not completed features. Their value will be judge
 
 ## Universal enhancement + optional profiles
 
-The preferred product direction is:
+The approved product direction is:
 
 ```text
 Universal GTC-HD enhancement + optional game profile
@@ -68,9 +68,13 @@ Optional profiles could later supply knowledge that graphics data alone cannot r
 
 The profile format and any scripting language remain undecided.
 
+[Approved Product Direction](docs/PRODUCT_DIRECTION.md) describes the play-first Runtime, eventual Studio capture/select/inspect/author/preview workflow, shareable profiles and long-term community library. These are intended experiences, not implemented features or selected technical/service architecture.
+
 ## Provisional roadmap
 
 This roadmap describes intended areas of work. Its sequence and scope may change as research invalidates or reshapes assumptions.
+
+Near term: completed corrected-baseline/EXP-001–004 research → completed comparative audit → October 6 documentation reconciliation → review/approval of the [DRAFT offline replay/preview contract](docs/specs/OFFLINE_REPLAY_PREVIEW.md) → separately authorized bounded consumer. That implementation has not begun; complete Mode 7 lineage, persistent identity and physical depth are outside the proposed slice.
 
 - **Phase 0 — Research and Architecture · Current:** Understand SNES rendering and determine what information a future enhancement renderer needs.
 - **Phase 1 — Foundation:** Select an initial emulator/core and establish the first production architecture.
@@ -91,6 +95,8 @@ Source research and focused experiments are being used to validate whether suffi
 
 Foundational choices remain intentionally unresolved: no emulator/core, programming language, graphics API, renderer architecture, or game-profile format has been selected. bsnes is a research target, not an accepted foundation.
 
+Candidate A is accepted as the corrected **experimental bsnes baseline** only. EXP-001/002/003 are verified for tested conditions on that baseline, and EXP-004 is verified for tested EXP-004 conditions. These scoped provenance/passivity results do not prove universal compatibility or complete execution-state equivalence. No complete semantic-frame contract or Studio exists. The [bounded comparative audit](docs/research/RELATED_WORK_SURVEY.md) is complete for its inspected revisions and scope.
+
 ## Research documentation
 
 Explore [docs/](docs/) for source-code research, emulator architecture investigations, experiment specifications and results, and architecture decisions as they mature. [Project State](docs/PROJECT_STATE.md) records the project's phase, priorities, and unresolved foundations.
@@ -99,18 +105,18 @@ Detailed evidence belongs there; architectural choices must be supported before 
 
 ## Experimental Source Code
 
-GTC-HD research uses isolated bsnes experiment branches. The [public bsnes research fork](https://github.com/AbslanLaverde/bsnes) contains sanitized publication equivalents of the actual instrumentation and tests used by the documented research. These branches are research code, not production GTC-HD or an upstream bsnes release. Research questions, rationale, evidence, results and architectural implications live in this repository; bsnes remains an unselected research target.
+GTC-HD research uses isolated bsnes experiment branches. The [public bsnes research fork](https://github.com/AbslanLaverde/bsnes) contains the sanitized research equivalents recorded in the **September 23, 2026 publication snapshot**. The source columns below identify that snapshot; the results column describes current research, including later corrected local integrations. Remote availability has not been rechecked for this reconciliation. These branches are research code, not production GTC-HD or an upstream bsnes release. Research questions, rationale, evidence, results and architectural implications live in this repository; bsnes remains unselected as the final core.
 
-| Experiment / specification | Question | Source branch | Public commit | Results / status |
+| Experiment / specification | Question | Source branch (September 23 snapshot) | Public commit | Current results / status |
 | --- | --- | --- | --- | --- |
-| [EXP-001 — BG provenance](docs/experiments/EXP-001/SPEC.md) | Can tiled-background source identity survive native PPU processing? | [BG observer](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-001-passive-ppu-observation) | [5ba4d2a8b](https://github.com/AbslanLaverde/bsnes/commit/5ba4d2a8b12a82a09db1f76640e659303aef7e22) | [Verified for tested EXP-001 conditions](docs/experiments/EXP-001/RESULTS.md) |
-| [EXP-002 — OBJ provenance](docs/experiments/EXP-002/SPEC.md) | Can a surviving OBJ candidate retain its OAM and fetched-tile lineage? | [OBJ observer](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-002-obj-provenance) | [097775053](https://github.com/AbslanLaverde/bsnes/commit/0977750530fb94efb8ddfcec6f27bde8d530ccbc) | [Verified for tested EXP-002 conditions](docs/experiments/EXP-002/RESULTS.md) |
-| [EXP-003 — Main/Sub composition provenance](docs/experiments/EXP-003/SPEC.md) | Which native sources win main/sub composition, and can their provenance survive? | [Composition observer](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-003-composition-provenance) | [f4a45d477](https://github.com/AbslanLaverde/bsnes/commit/f4a45d47797d4af0918768005b481f95e5ef4635) | [Verified for tested EXP-003 conditions](docs/experiments/EXP-003/RESULTS.md) |
-| [EXP-004 — Color math / native sample provenance](docs/experiments/EXP-004/SPEC.md) | Can native color-math decisions and supplied output values retain source provenance? | [P0 investigation tests](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-004-color-math-provenance) | [52cd72078](https://github.com/AbslanLaverde/bsnes/commit/52cd72078fdc06a51ddeaa51efe943550dec795e) | [**P0 bounds investigation only / implementation blocked**](docs/experiments/EXP-004/P0_OUTPUT_BOUNDS_REPORT.md) |
+| [EXP-001 — BG provenance](docs/experiments/EXP-001/SPEC.md) | Can tiled-background source identity survive native PPU processing? | [BG observer](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-001-passive-ppu-observation) | [5ba4d2a8b](https://github.com/AbslanLaverde/bsnes/commit/5ba4d2a8b12a82a09db1f76640e659303aef7e22) | [Verified for tested conditions on accepted corrected baseline](docs/experiments/EXP-001/RESULTS.md) |
+| [EXP-002 — OBJ provenance](docs/experiments/EXP-002/SPEC.md) | Can a surviving OBJ candidate retain its OAM and fetched-tile lineage? | [OBJ observer](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-002-obj-provenance) | [097775053](https://github.com/AbslanLaverde/bsnes/commit/0977750530fb94efb8ddfcec6f27bde8d530ccbc) | [Verified for tested conditions on accepted corrected baseline](docs/experiments/EXP-002/RESULTS.md) |
+| [EXP-003 — Main/Sub composition provenance](docs/experiments/EXP-003/SPEC.md) | Which native sources win main/sub composition, and can their provenance survive? | [Composition observer](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-003-composition-provenance) | [f4a45d477](https://github.com/AbslanLaverde/bsnes/commit/f4a45d47797d4af0918768005b481f95e5ef4635) | [Verified for tested conditions on accepted corrected baseline](docs/experiments/EXP-003/RESULTS.md) |
+| [EXP-004 — Color math / native sample provenance](docs/experiments/EXP-004/SPEC.md) | Can native color-math decisions and supplied output values retain source provenance? | [P0 investigation tests](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-004-color-math-provenance) | [52cd72078](https://github.com/AbslanLaverde/bsnes/commit/52cd72078fdc06a51ddeaa51efe943550dec795e) | [Verified for tested EXP-004 conditions](docs/experiments/EXP-004/RESULTS.md) |
 
 The shared [runtime-harness branch](https://github.com/AbslanLaverde/bsnes/tree/gtc-hd/exp-001-runtime-harness), at public commit [ac488fe85](https://github.com/AbslanLaverde/bsnes/commit/ac488fe85289642bfedc6b5001146cc3effe6d8a), provides validation infrastructure; its [results and limitations](docs/experiments/EXP-001/RUNTIME_HARNESS_RESULTS.md) are documented separately.
 
-The [publication map](docs/research/BSNES_EXPERIMENT_PUBLICATION_MAP.md) links exact baseline comparisons and distinguishes historical implementation commits from their public equivalents. Historical executable hashes and ROM evidence remain tied to the original commits/builds. Focused publication validation is separate from ROM validation. The public EXP-004 branch contains the EXP-003 foundation plus P0 investigation tests; color-math provenance is not implemented.
+The [publication map](docs/research/BSNES_EXPERIMENT_PUBLICATION_MAP.md) links exact baseline comparisons and distinguishes historical implementation commits from their public equivalents. Historical executable hashes and ROM evidence remain tied to the original commits/builds. Focused publication validation is separate from ROM validation. The recorded public EXP-004 revision contains the EXP-003 foundation plus [P0 investigation tests](docs/experiments/EXP-004/P0_OUTPUT_BOUNDS_REPORT.md), without color-math provenance implementation. Current verified EXP-004 uses a separate corrected local integration; its identity and the corrected EXP-001/002/003 identities are in [Project State](docs/PROJECT_STATE.md). This is not a claim that corrected source is published, and the old public P0-only revision is not the current implementation gate.
 
 ## AI-assisted engineering
 

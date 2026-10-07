@@ -2,6 +2,8 @@
 
 Inspection date: **2026-10-05**. GTC-HD-Lab: `main`, `836751bc775abcbf1ecc102a43ea92a72de8fc37` before this documentation change.
 
+**Reconciliation notice — 2026-10-06:** this bounded audit is complete for the revisions and scope recorded below; its source findings remain unchanged. Its recommendation now has a [DRAFT contract](../specs/OFFLINE_REPLAY_PREVIEW.md), with implementation still unauthorized. [Product Direction](../PRODUCT_DIRECTION.md) holds approved intentions. The original foundational documents have since been supplied and reconciled into proposed [Knowledge Base v2.0](../knowledge/KNOWLEDGE_BASE.md) and [Custom GPT Instructions v2.0](../knowledge/CUSTOM_GPT_INSTRUCTIONS.md) replacements, pending review. Any source-availability limitation below describes the October 5 audit, not the current reconciliation; no deployed GPT was updated.
+
 **GTC-HD INFERENCE / recommendation:** build one bounded, offline native-sample replay with a frozen source-selection and enhancement preview. First reconstruct an explicitly owned interval from captured operands, controls and history; then let an author select a contributing source occurrence and adjust a restrained glow. This tests whether semantics improve an actual visual interaction without requiring persistent asset identity, physical depth, a complete frame interface or a full Studio. It is a proposal, not implementation authorization or an architecture decision.
 
 ## 1. What is established, and what is still missing?

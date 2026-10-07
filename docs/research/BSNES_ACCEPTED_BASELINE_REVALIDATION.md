@@ -1,5 +1,9 @@
 # Candidate A Accepted-Baseline Transfer Revalidation
 
+**Current-disposition notice — 2026-10-06:** EXP-001/002/003 are **VERIFIED FOR TESTED CONDITIONS ON ACCEPTED CORRECTED BASELINE**. See [resumed transfer results](#resumed-transfer-results--2026-10-05). The initial stop and diagnosis below are historical and remain unchanged. Later explicit reauthorization and completed [EXP-004 results](../experiments/EXP-004/RESULTS.md) supersede this report's pre-reauthorization EXP-004 gate; current EXP-004 is **VERIFIED FOR TESTED EXP-004 CONDITIONS**. No new implementation is authorized by this notice.
+
+## Historical initial transfer stop
+
 Date: 2026-10-05.
 
 **Disposition: STOPPED / BUILDS AND FOCUSED HOST CHECKS PASSED / RUNTIME TRANSFERS INCOMPLETE.**

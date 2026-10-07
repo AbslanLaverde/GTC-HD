@@ -1,6 +1,14 @@
 # bsnes experiment source: historical and public identities
 
-The [public bsnes research fork](https://github.com/AbslanLaverde/bsnes) provides sanitized publication equivalents of GTC-HD's experimental instrumentation and tests. Research questions, specifications, evidence and conclusions remain in GTC-HD-Lab. This is research code; bsnes has not been selected as the GTC-HD foundation, and these branches are neither production GTC-HD nor upstream bsnes releases.
+The [public bsnes research fork](https://github.com/AbslanLaverde/bsnes) provides the sanitized experiment equivalents recorded in the **September 23, 2026 publication snapshot** below. Research questions, specifications, evidence and conclusions remain in GTC-HD-Lab. This is research code; bsnes has not been selected as the GTC-HD foundation, and these branches are neither production GTC-HD nor upstream bsnes releases.
+
+## Current research versus the publication snapshot — 2026-10-06
+
+Candidate A is now the accepted corrected **experimental** baseline. Corrected EXP-001/002/003 are **VERIFIED FOR TESTED CONDITIONS ON ACCEPTED CORRECTED BASELINE**, and corrected EXP-004 is **VERIFIED FOR TESTED EXP-004 CONDITIONS**. Exact corrected identities are maintained in [Project State](../PROJECT_STATE.md), with [transfer evidence](BSNES_ACCEPTED_BASELINE_REVALIDATION.md) and [EXP-004 results](../experiments/EXP-004/RESULTS.md).
+
+Those later corrected integrations exist in local Git and change the implementation baseline; they are not equivalent identity-only publication rewrites of the rows below. No corrected public availability is asserted. Remote branch tips were not rechecked in this reconciliation, and publication of corrected source is deferred to separate authorization. Historical “uncommitted,” stopped-transfer and pending-gate statements describe their original checkpoints, not the current local source state.
+
+The mappings, public links and publication-validation evidence below remain the dated snapshot. Its P0-only EXP-004 revision does not mean current EXP-004 research is blocked.
 
 ## Why two commit identities are retained
 
@@ -36,6 +44,10 @@ H and H-observer remain distinct commits: the observer line is U → B → H-obs
 Focused publication validation passed for the harness, EXP-001 observer/runtime controls, EXP-002 OBJ runner, EXP-003 composition runner and P0 at its public committed tip. It used Windows Python 3.12.9 and MSYS2 UCRT64 GCC 16.2.0. The checks covered host fixtures, relevant desktop builds and CLI rejection paths; no ROM was executed during publication validation. P0's four O0/O3 fixture runs agreed; ASan/UBSan libraries were unavailable. Native source matched each corresponding historical experiment tree.
 
 This validation is separate from historical ROM validation and does not change any experiment's verification status. Read the original scope, results and remaining limitations in [EXP-001 results](../experiments/EXP-001/RESULTS.md), [runtime-harness results](../experiments/EXP-001/RUNTIME_HARNESS_RESULTS.md), [EXP-002 results](../experiments/EXP-002/RESULTS.md), [EXP-003 results](../experiments/EXP-003/RESULTS.md) and the [EXP-004-P0 report](../experiments/EXP-004/P0_OUTPUT_BOUNDS_REPORT.md).
+
+### Historical September 23 EXP-004 disposition
+
+The following gate statement is preserved as history. Subsequent baseline disposition, transfer validation, explicit reauthorization and completed EXP-004 supersede it for the corrected checkout, as recorded above; the published revision's contents remain distinct.
 
 **EXP-004: P0 bounds investigation only / implementation blocked.** The public branch contains the sanitized EXP-003 foundation plus P0 investigation tests. It does not contain color-math provenance implementation or a native bounds repair. The corrected P0 runner requires public C to be an ancestor of HEAD on the expected branch and checks both committed and working native source against C, allowing test/publication-only descendants.
 

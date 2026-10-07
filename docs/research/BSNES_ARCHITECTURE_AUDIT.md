@@ -2,6 +2,10 @@
 
 Research date: September 18, 2026. Status: research evidence for GTC-HD Phase 0. **bsnes remains a research target; neither an emulator foundation nor an interception boundary is selected by this report.**
 
+**Current-disposition notice — October 6, 2026:** this September 18 audit remains a static account of `7d5aa1e656b9171524d01b1b22917197d8121cb4`, including its original paths, questions and recommendations. Maintained authority now lives in [Project State](../PROJECT_STATE.md). Candidate A is accepted as a corrected experimental baseline, EXP-001/002/003 have [verified scoped transfers](BSNES_ACCEPTED_BASELINE_REVALIDATION.md), and [EXP-004](../experiments/EXP-004/RESULTS.md) subsequently verified color-math/native-sample provenance for its tested conditions. These later results answer narrower export/passivity questions; they do not upgrade every source inference here to VERIFIED, supply complete assets/frame ownership, or select a final core/architecture.
+
+The [bounded comparative audit](RELATED_WORK_SURVEY.md) is complete. The next review is the [DRAFT offline replay/preview contract](../specs/OFFLINE_REPLAY_PREVIEW.md), not a repeat of this initial audit. No next implementation is authorized. The historical body below remains unchanged.
+
 Evidence labels used throughout:
 
 - **SOURCE OBSERVATION**: directly visible in the inspected checkout, including explicitly identified upstream comments.
